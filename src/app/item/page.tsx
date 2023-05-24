@@ -32,7 +32,7 @@ type StoryComment = {
 }
 
 async function fetchHackerNewsPost(itemId: string) {
-  const url = `http://hn.algolia.com/api/v1/items/${itemId}`;
+  const url = `https://hn.algolia.com/api/v1/items/${itemId}`;
   return fetch(url)
     .then(response => response.json() as unknown as Story)
 }

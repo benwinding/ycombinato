@@ -2,9 +2,7 @@ name: Deploy on GH-Pages
 on:
   push:
     branchs:
-      - master
-  repository_dispatch:
-    types: [publish-event]
+      - main
 
 jobs:
   deploy:

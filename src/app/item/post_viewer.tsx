@@ -1,8 +1,9 @@
 "use client"
-import React from "react";
-import { useUrlParams, fetchHackerNewsPost, Story, StoryComment } from "./fetcher";
+import React, { useMemo } from "react";
+import { useUrlParams, fetchHackerNewsPost, StoryComment } from "./fetcher";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
+import { sortChildren } from "./sorter";
 
 export const PostViewerWrapper = () => {
   return <QueryClientProvider client={queryClient}>
@@ -11,24 +12,72 @@ export const PostViewerWrapper = () => {
 }
 
 const PostViewer = () => {
-  // const [searchText, setSearchText] = React.useState<string>('web');
+  const [sortOption, setSortOoption] = React.useState<Option>(Option.byResponseCount);
   const params = useUrlParams();
   const postId = params?.get('id');
   const query = useQuery('post', () => fetchHackerNewsPost(postId + ''), {
     enabled: postId != null,
   });
+  const data = query.data;
+  const dataSorted = useMemo(() => data ? sortChildren(data, {
+    byResponseCount: sortOption === Option.byResponseCount,
+    byThreadLength: sortOption === Option.byThreadLength,
+  }) : undefined, [data, sortOption]);
   return <div className="flex flex-col py-1 px-2">
+    <SortOptions onChange={setSortOoption} value={sortOption} />
     {/* <SearchField value={searchText} onChange={setSearchText} /> */}
     {query.isLoading && query.isFetching && <div>Loading...</div>}
-    {query.data && <Results story={query.data} />}
+    {dataSorted && <Results title={dataSorted.title} comments={dataSorted.children} />}
   </div>
 }
 
-const Results = (props: { story: Story }) => {
+const enum Option {
+  byResponseCount = 'Sort by response count',
+  byThreadLength = 'Sort by thread length',
+};
+
+function SortOptions(props: { value: Option | undefined, onChange: (value: Option) => void }) {
+  const options: Option[] = [Option.byResponseCount, Option.byThreadLength];
+
+  return (
+    <div className="flex items-center gap-2">
+      {options.map(option => <RadioButton
+        key={option}
+        value={option}
+        label={option}
+        checked={option === props.value}
+        onChange={e => props.onChange(option)}
+      />)}
+    </div>
+  );
+}
+
+type RadioButtonProps = {
+  label: string;
+  value: string;
+  checked: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+function RadioButton({ label, value, checked, onChange }: RadioButtonProps) {
+  return (
+    <label className="text-xs flex items-center gap-1">
+      <input
+        type="radio"
+        value={value}
+        checked={checked}
+        onChange={onChange}
+      />
+      {label}
+    </label>
+  );
+}
+
+const Results = (props: { title: string, comments: StoryComment[] }) => {
   return <div className="font-sans">
     <div className="flex flex-col gap-2">
-      <h1 className="text-xl font-bold">{props.story.title}</h1>
-      {props.story.children.map(child => <CommentCard key={child.id} comment={child} />)}
+      <h1 className="text-xl font-bold">{props.title}</h1>
+      {props.comments.map(child => <CommentCard key={child.id} comment={child} />)}
     </div>
   </div>
 }

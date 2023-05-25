@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 
 export type Story = {
@@ -30,25 +31,13 @@ export type StoryComment = {
   children: StoryComment[];
 }
 
-async function fetchHackerNewsPost(itemId: string) {
+export const fetchHackerNewsPost = async (itemId: string) => {
   const url = `https://hn.algolia.com/api/v1/items/${itemId}`;
   return fetch(url)
     .then(response => response.json() as unknown as Story)
 }
 
-export function usePost(itemId: string) {
-  const [post, setPost] = React.useState<Story>();
-
-  React.useEffect(() => {
-    itemId && fetchHackerNewsPost(itemId)
-      .then(data => setPost(data))
-      .catch(err => console.log(err));
-  }, [itemId]);
-
-  return post;
-}
-
-export function useUrlParams() {
+export const useUrlParams = () => {
   const [id, setId] = React.useState<URLSearchParams>();
   React.useEffect(() => {
     // Get the query string from the URL

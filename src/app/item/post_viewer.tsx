@@ -15,7 +15,7 @@ const PostViewer = () => {
   const [sortOption, setSortOoption] = React.useState<Option>(Option.byResponseCount);
   const params = useUrlParams();
   const postId = params?.get('id');
-  const query = useQuery('post', () => fetchHackerNewsPost(postId + ''), {
+  const query = useQuery('post' + postId, () => fetchHackerNewsPost(postId + ''), {
     enabled: postId != null,
   });
   const data = query.data;

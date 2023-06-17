@@ -54,9 +54,6 @@ const PostViewer = () => {
 };
 
 const useResults = (data: Story | undefined) => {
-  React.useEffect(() => {
-    console.log('data changed...');
-  }, [data]);
   const results = useMemo(
     () =>
       data && <CommentResults title={data.title} comments={data.children} />,
@@ -78,7 +75,6 @@ const useDataSort = (data: Story | undefined, sortOption: Option) => {
   );
   return dataSorted;
 };
-
 
 const enum Option {
   byResponseCount = "Sort by response count",

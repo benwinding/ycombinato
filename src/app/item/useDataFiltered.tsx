@@ -2,8 +2,10 @@
 import { useMemo } from "react";
 import { Story, StoryComment } from "./fetcher";
 
-export function useDataFiltered(data: Story | undefined,
-  filterText: string): { data: Story; markCount: number; } | undefined {
+export function useDataFiltered(
+  data: Story | undefined,
+  filterText: string
+): { data: Story; markCount: number } | undefined {
   const dataFiltered = useMemo(() => {
     if (!data) {
       return undefined;
@@ -11,7 +13,7 @@ export function useDataFiltered(data: Story | undefined,
     if (!filterText) {
       return { data, markCount: 0 };
     }
-    console.log('marking...');
+    console.log("marking...");
     return markAndCountChildren(data, filterText);
   }, [data, filterText]);
   return dataFiltered;
@@ -21,7 +23,7 @@ function markAndCountChildren(
   data: Story,
   filterText: string
 ): { data: Story; markCount: number } {
-  const markedStory: Story = {...data};
+  const markedStory: Story = { ...data };
   const markCount = markedStory.children.reduce((a, comment) => {
     const markCountFromChildren = recursiveMarkAndCountChildren(
       comment,
@@ -32,12 +34,12 @@ function markAndCountChildren(
   return { data: markedStory, markCount };
 }
 
-function recursiveMarkAndCountChildren(data: StoryComment, filterText: string) {
+function recursiveMarkAndCountChildren(comment: StoryComment, filterText: string) {
   let totalMarkCount = 0;
-  data.children.forEach((comment) => {
-    const res = markTheHtml(comment.text || "", filterText);
-    totalMarkCount += res.numReplacements;
-    comment.textMarked = res.htmlNew;
+  const res = markTheHtml(comment.text || "", filterText);
+  totalMarkCount += res.numReplacements;
+  comment.textMarked = res.htmlNew;
+  comment.children.forEach((comment) => {
     totalMarkCount += recursiveMarkAndCountChildren(comment, filterText);
   });
   return totalMarkCount;

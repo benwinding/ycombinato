@@ -7,6 +7,7 @@ import { sortChildren } from "./sorter";
 import { useDebounce } from "./useDebounce";
 import { useDataFiltered } from "./useDataFiltered";
 import { CommentResults } from "./comments";
+import { XCircleIcon } from "@heroicons/react/24/solid";
 
 export const PostViewerWrapper = () => {
   return (
@@ -46,7 +47,11 @@ const PostViewer = () => {
           </div>
           <div className="flex-shrink-0">
             {markCount != null && (
-              <FilterResultsCount count={markCount} loading={debounceLoading} />
+              <FilterResultsCount
+                count={markCount}
+                loading={debounceLoading}
+                filterText={textFilter}
+              />
             )}
           </div>
         </div>
@@ -57,7 +62,14 @@ const PostViewer = () => {
   );
 };
 
-function FilterResultsCount(props: { count: number; loading: boolean }) {
+function FilterResultsCount(props: {
+  count: number;
+  loading: boolean;
+  filterText: string;
+}) {
+  if (!props.filterText) {
+    return <div className="w-20"></div>;
+  }
   if (props.loading) {
     return <div>Searching...</div>;
   }
@@ -105,12 +117,20 @@ function FilterText(props: {
   value: string;
 }) {
   return (
-    <input
-      className="border rounded-md px-1 w-full"
-      placeholder="Filter comments..."
-      onChange={(e) => props.onChange(e.target.value)}
-      value={props.value}
-    />
+    <div className="flex">
+      <input
+        className="border rounded-md px-1 w-full"
+        placeholder="Filter comments..."
+        onChange={(e) => props.onChange(e.target.value)}
+        value={props.value}
+      />
+      <button
+        onClick={() => props.onChange("")}
+        className="-ml-6 text-gray-400"
+      >
+        <XCircleIcon width={20} />
+      </button>
+    </div>
   );
 }
 

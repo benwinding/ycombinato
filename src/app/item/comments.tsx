@@ -52,20 +52,21 @@ const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
   const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
   const onExpand = React.useCallback(() => setIsCollapsed(false), []);
 
+  const expander = (
+    <Expander
+      isCollapsed={isCollapsed}
+      onCollapse={onCollapse}
+      onExpand={onExpand}
+    />
+  );
+
   return (
     <CommentCardContent
       id={comment.id}
       html={html}
       comments={comment.children}
       isCollapsed={isCollapsed}
-      header={
-        <CommentHeader
-          comment={comment}
-          isCollapsed={isCollapsed}
-          onCollapse={onCollapse}
-          onExpand={onExpand}
-        />
-      }
+      header={<CommentHeader comment={comment} expander={expander} />}
       filterText={filterText}
     />
   );
@@ -86,7 +87,7 @@ function CommentCardContent(props: {
         {props.header}
         {!isCollapsed && (
           <div
-            className="text-xs py-1 pr-2"
+            className="text-xs pb-1 pr-2"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
@@ -102,11 +103,30 @@ function CommentCardContent(props: {
 
 function CommentHeader({
   comment,
+  expander,
+}: {
+  comment: StoryComment;
+  expander: React.ReactNode;
+}) {
+  const linkToComment = `https://news.ycombinator.com/item?id=${comment.id}`;
+  const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
+  return (
+    <div className="flex items-center gap-2 text-gray-500 text-xs py-1">
+      <ExternalLink href={linkToUser}>{comment.author}</ExternalLink>
+      <ExternalLink href={linkToComment}>
+        {getFromNowStr(comment.created_at)}
+      </ExternalLink>
+      <div className="flex-grow"></div>
+      <div className="pr-2">{expander}</div>
+    </div>
+  );
+}
+
+function Expander({
   isCollapsed,
   onExpand,
   onCollapse,
 }: {
-  comment: StoryComment;
   isCollapsed: boolean;
   onExpand: () => void;
   onCollapse: () => void;
@@ -115,19 +135,7 @@ function CommentHeader({
   const onClickExpander = React.useCallback(() => {
     isCollapsed ? onExpand() : onCollapse();
   }, [isCollapsed, onCollapse, onExpand]);
-  const linkToComment = `https://news.ycombinator.com/item?id=${comment.id}`;
-  const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
-  return (
-    <div className="flex items-center gap-2 text-gray-500 text-xs pt-1">
-      <ExternalLink href={linkToUser}>{comment.author}</ExternalLink>
-      <ExternalLink href={linkToComment}>
-        {getFromNowStr(comment.created_at)}
-      </ExternalLink>
-      <button style={{ marginTop: -2 }} onClick={onClickExpander}>
-        [{expanderIcon}]
-      </button>
-    </div>
-  );
+  return <button onClick={onClickExpander}>[{expanderIcon}]</button>;
 }
 
 function getFromNowStr(input: string): string {

@@ -3,7 +3,6 @@ import { Story, StoryComment } from "./fetcher";
 import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
 import { ExternalLink } from "./ExternalLink";
 dayjs.extend(relativeTime);
 
@@ -11,6 +10,7 @@ export const CommentResults = (props: {
   story: Story;
   filterText: string;
   commentCount: number;
+  filterOptions: React.ReactNode;
 }) => {
   const comments = props.story.children;
   return (
@@ -19,6 +19,7 @@ export const CommentResults = (props: {
         <DiscussionHeader
           story={props.story}
           commentCount={props.commentCount}
+          filterOptions={props.filterOptions}
         />
         {comments.map((child) => (
           <CommentCard
@@ -35,9 +36,11 @@ export const CommentResults = (props: {
 function DiscussionHeader({
   story,
   commentCount,
+  filterOptions,
 }: {
   story: Story;
   commentCount: number;
+  filterOptions: React.ReactNode;
 }) {
   const discussionId = story.id;
   const submissionLink = story.url;
@@ -56,6 +59,9 @@ function DiscussionHeader({
       <div className="text-xs">
         {story.points} points by {story.author}{" "}
         {getFromNowStr(story.created_at)} | {commentCount} comments
+      </div>
+      <div className="border border-gray-300 p-2 rounded mt-2">
+        {filterOptions}
       </div>
     </div>
   );

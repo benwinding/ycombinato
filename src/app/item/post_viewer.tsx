@@ -41,31 +41,34 @@ const PostViewer = () => {
   const dataSorted = useDataSort(data, sortOption);
   const commentCount = useCommentCount(data);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
+  const markCount = dataFiltered?.markCount;
+  const filterOptions = (
+    <div className="flex flex-col sm:flex-row gap-2">
+      <SortOptions onChange={setSortOoption} value={sortOption} />
+      <div className="flex items-center gap-2">
+        <div className="flex-grow">
+          <FilterText onChange={setTextFilter} value={textFilter} />
+        </div>
+        <div className="flex-shrink-0">
+          {markCount != null && (
+            <FilterResultsCount
+              count={markCount}
+              loading={debounceLoading}
+              filterText={textFilter}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
   const results = useResults(
     dataFiltered?.data,
     textFilterDebounced,
-    commentCount
+    commentCount,
+    filterOptions
   );
-  const markCount = dataFiltered?.markCount;
   return (
     <div className="flex flex-col py-1 px-2">
-      <div className="flex flex-col sm:flex-row gap-2">
-        <SortOptions onChange={setSortOoption} value={sortOption} />
-        <div className="flex items-center gap-2">
-          <div className="flex-grow">
-            <FilterText onChange={setTextFilter} value={textFilter} />
-          </div>
-          <div className="flex-shrink-0">
-            {markCount != null && (
-              <FilterResultsCount
-                count={markCount}
-                loading={debounceLoading}
-                filterText={textFilter}
-              />
-            )}
-          </div>
-        </div>
-      </div>
       {query.isLoading && query.isFetching && <div>Loading...</div>}
       {results}
     </div>
@@ -104,7 +107,8 @@ function useCommentCount(data: Story | undefined): number {
 const useResults = (
   data: Story | undefined,
   filterText: string,
-  commentCount: number
+  commentCount: number,
+  filterOptions: React.ReactNode
 ) => {
   const results = useMemo(
     () =>
@@ -113,9 +117,10 @@ const useResults = (
           story={data}
           filterText={filterText}
           commentCount={commentCount}
+          filterOptions={filterOptions}
         />
       ),
-    [data, filterText, commentCount]
+    [data, filterText, commentCount, filterOptions]
   );
   return results;
 };

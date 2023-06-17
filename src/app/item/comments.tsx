@@ -43,7 +43,7 @@ const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
   const html = comment._textMarked || comment.text || "<i>[deleted]<i/>";
 
   const expanderText = useTextCollapse(comment._textMarked, filterText);
-  const expanderThread = useThreadCollapse();
+  const expanderThread = useThreadCollapse(filterText);
 
   return (
     <CommentCardContent
@@ -76,8 +76,15 @@ const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
   );
 };
 
-function useThreadCollapse() {
+function useThreadCollapse(filterText: string) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  React.useEffect(() => {
+    if (filterText) {
+      setIsCollapsed(false);
+    }
+  }, [filterText]);
+
   const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
   const onExpand = React.useCallback(() => setIsCollapsed(false), []);
   return { isCollapsed, onCollapse, onExpand };

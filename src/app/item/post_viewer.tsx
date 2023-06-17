@@ -8,13 +8,13 @@ import { useDebounce } from "./useDebounce";
 import { useDataFiltered } from "./useDataFiltered";
 import { CommentResults } from "./comments";
 
-export const PostViewerWrapper = React.memo(function Wrapper() {
+export const PostViewerWrapper = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <PostViewer />
     </QueryClientProvider>
   );
-});
+};
 
 const PostViewer = () => {
   const [sortOption, setSortOoption] = React.useState<Option>(
@@ -38,14 +38,19 @@ const PostViewer = () => {
   const markCount = dataFiltered?.markCount;
   return (
     <div className="flex flex-col py-1 px-2">
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <SortOptions onChange={setSortOoption} value={sortOption} />
-        <FilterText onChange={setTextFilter} value={textFilter} />
-        {markCount != null && (
-          <FilterResultsCount count={markCount} loading={debounceLoading} />
-        )}
+        <div className="flex items-center gap-2">
+          <div className="flex-grow">
+            <FilterText onChange={setTextFilter} value={textFilter} />
+          </div>
+          <div className="flex-shrink-0">
+            {markCount != null && (
+              <FilterResultsCount count={markCount} loading={debounceLoading} />
+            )}
+          </div>
+        </div>
       </div>
-      {/* <SearchField value={searchText} onChange={setSearchText} /> */}
       {query.isLoading && query.isFetching && <div>Loading...</div>}
       {results}
     </div>
@@ -65,6 +70,7 @@ const useResults = (data: Story | undefined, filterText: string) => {
       data && (
         <CommentResults
           submissionLink={data.url}
+          discussionId={data.id}
           title={data.title}
           comments={data.children}
           filterText={filterText}
@@ -100,7 +106,7 @@ function FilterText(props: {
 }) {
   return (
     <input
-      className="border rounded-md px-1"
+      className="border rounded-md px-1 w-full"
       placeholder="Filter comments..."
       onChange={(e) => props.onChange(e.target.value)}
       value={props.value}

@@ -4,27 +4,28 @@ import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
+import { ExternalLink } from "./ExternalLink";
 dayjs.extend(relativeTime);
 
 export const CommentResults = (props: {
   submissionLink: string;
+  discussionId: number;
   title: string | null;
   comments: StoryComment[];
   filterText: string;
 }) => {
+  const linkToDiscussion = `https://news.ycombinator.com/item?id=${props.discussionId}`;
   return (
     <div className="font-sans">
       <div className="flex flex-col gap-2">
-        <a
-          href={props.submissionLink}
-          target="_blank"
-          referrerPolicy="no-referrer"
-          className="hover:underline"
-        >
-          <h1 className="text-xl flex items-center gap-2">
-            <ArrowTopRightOnSquareIcon width={20} /> {props.title}
-          </h1>
-        </a>
+        <div className="flex gap-2 items-center justify-between">
+          <ExternalLink href={props.submissionLink}>
+            <h1 className="text-xl flex items-center gap-2">
+              <ArrowTopRightOnSquareIcon width={20} /> {props.title}
+            </h1>
+          </ExternalLink>
+          <ExternalLink href={linkToDiscussion}>(back to hn)</ExternalLink>
+        </div>
         {props.comments.map((child) => (
           <CommentCard
             key={child.id}
@@ -118,31 +119,15 @@ function CommentHeader({
   const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
   return (
     <div className="flex items-center gap-2 text-gray-500 text-xs pt-1">
-      <a
-        className="hover:underline"
-        href={linkToUser}
-        target="_blank"
-        referrerPolicy="no-referrer"
-      >
-        {comment.author}
-      </a>
-      <a
-        className="hover:underline "
-        href={linkToComment}
-        target="_blank"
-        referrerPolicy="no-referrer"
-      >
+      <ExternalLink href={linkToUser}>{comment.author}</ExternalLink>
+      <ExternalLink href={linkToComment}>
         {getFromNowStr(comment.created_at)}
-      </a>
+      </ExternalLink>
       <button style={{ marginTop: -2 }} onClick={onClickExpander}>
         [{expanderIcon}]
       </button>
     </div>
   );
-}
-
-function makeLink(id: number) {
-  return `https://news.ycombinator.com/item?id=${id}`;
 }
 
 function getFromNowStr(input: string): string {

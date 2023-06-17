@@ -5,13 +5,13 @@ import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
 
-export const PostViewerWrapper = () => {
+export const PostViewerWrapper = React.memo(function Wrapper() {
   return (
     <QueryClientProvider client={queryClient}>
       <PostViewer />
     </QueryClientProvider>
   );
-};
+});
 
 const PostViewer = () => {
   const [sortOption, setSortOoption] = React.useState<Option>(

@@ -1,60 +1,76 @@
 import { sortChildren } from "./sorter";
 
-type TestStory = {
-  children: TestStory[];
+type SimpleTreeRoot = SimpleTreeNode[];
+type SimpleTreeNode = [string, SimpleTreeNode[]] | [string];
+
+type ChildrenObjRoot = {
+  children: ChildrenObjNode[];
 };
-
-const child = () => new TestBuilder();
-
-// Builds TestStories
-class TestBuilder {
-  story: TestStory = { children: [] };
-
-  withChild(story: TestBuilder): TestBuilder {
-    this.story.children.push(story.story);
-    return this;
-  }
-}
+type ChildrenObjNode = {
+  value: string;
+  children: ChildrenObjNode[];
+};
 
 describe("sortStory", () => {
   it("sorts stories byResponseCount", () => {
     const res = sortChildren(
-      child().withChild(child()).withChild(child().withChild(child())).story,
+      convertSimpleTree([
+        ["a2"], //
+        ["a1", [["a11"], ["a12"]]], //
+        ["a3"], //
+      ]),
       {
         byResponseCount: true,
-        byThreadLength: false,
+        byThreadDepth: false,
       }
     );
-    expect<TestStory>(res).toMatchObject(
-      child().withChild(child().withChild(child()).withChild(child())).story
+    expect<ChildrenObjRoot>(res).toMatchObject(
+      convertSimpleTree([
+        ["a1", [["a11"], ["a12"]]], //
+        ["a2"], //
+        ["a3"], //
+      ])
     );
   });
-  it("sorts stories byThreadLength", () => {
+  it("sorts stories byThreadDepth", () => {
     const res = sortChildren(
-      child()
-        .withChild(
-          child()
-            .withChild(child())
-            .withChild(child())
-            .withChild(child())
-            .withChild(child())
-        )
-        .withChild(child().withChild(child().withChild(child()))).story,
+      convertSimpleTree([
+        ["a1", [["a11"]]], //
+        ["a2", [["a11", [["a111"]]]]], //
+        ["a3"], //
+      ]),
       {
         byResponseCount: false,
-        byThreadLength: true,
+        byThreadDepth: true,
       }
     );
-    expect<TestStory>(res).toMatchObject(
-      child()
-        .withChild(child().withChild(child().withChild(child())))
-        .withChild(
-          child()
-            .withChild(child())
-            .withChild(child())
-            .withChild(child())
-            .withChild(child())
-        ).story
+    expect<ChildrenObjRoot>(res).toMatchObject(
+      convertSimpleTree([
+        ["a2", [["a11", [["a111"]]]]], //
+        ["a1", [["a11"]]], //
+        ["a3"], //
+      ])
     );
   });
 });
+
+function convertSimpleTree(simpleRoot: SimpleTreeRoot): ChildrenObjRoot {
+  const root: ChildrenObjRoot = { children: [] };
+
+  function buildTree(
+    node: ChildrenObjRoot,
+    data: SimpleTreeNode[]
+  ): ChildrenObjNode[] {
+    for (let i = 0; i < data.length; i++) {
+      const [value, children] = data[i];
+      const newNode: ChildrenObjNode = { value, children: [] };
+      newNode.children = buildTree(newNode, children || []);
+      node.children.push(newNode);
+    }
+    return node.children;
+  }
+
+  root.children = buildTree(root, simpleRoot);
+
+  return root;
+}

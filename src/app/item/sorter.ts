@@ -12,7 +12,7 @@ export function sortChildren<T extends HasChildren>(
   if (!story) {
     return story;
   }
-  const storySorted: T = { ...story };
+  const storySorted: T = JSON.parse(JSON.stringify(story));
 
   if (opts.byThreadDepth) {
     const getDeepestChildLevel = (
@@ -32,7 +32,7 @@ export function sortChildren<T extends HasChildren>(
       }, 0);
       return deepestChildCount;
     };
-    const recursiveSortbyThreadDepth = (
+    const sortbyThreadDepthFn = (
       comment1: HasChildren,
       comment2: HasChildren
     ): number => {
@@ -41,7 +41,7 @@ export function sortChildren<T extends HasChildren>(
       );
     };
     const recursiveSort = (node: HasChildren): HasChildren[] => {
-      node.children.sort(recursiveSortbyThreadDepth);
+      node.children.sort(sortbyThreadDepthFn);
       node.children.forEach((child) => {
         recursiveSort(child);
       });

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { StoryComment } from "./fetcher";
 import React from "react";
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime)
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
+dayjs.extend(relativeTime);
 
 export const CommentResults = (props: {
+  submissionLink: string;
   title: string | null;
   comments: StoryComment[];
   filterText: string;
@@ -13,7 +15,7 @@ export const CommentResults = (props: {
   return (
     <div className="font-sans">
       <div className="flex flex-col gap-2">
-        <h1 className="text-xl font-bold">{props.title}</h1>
+        <a href={props.submissionLink} target="_blank" referrerPolicy="no-referrer" className="hover:underline"><h1 className="text-xl flex items-center gap-2"><ArrowTopRightOnSquareIcon width={20}/> {props.title}</h1></a>
         {props.comments.map((child) => (
           <CommentCard
             key={child.id}
@@ -46,12 +48,14 @@ const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
       html={html}
       comments={comment.children}
       isCollapsed={isCollapsed}
-      header={<CommentHeader
-        comment={comment}
-        isCollapsed={isCollapsed}
-        onCollapse={onCollapse}
-        onExpand={onExpand}
-      />}
+      header={
+        <CommentHeader
+          comment={comment}
+          isCollapsed={isCollapsed}
+          onCollapse={onCollapse}
+          onExpand={onExpand}
+        />
+      }
       filterText={filterText}
     />
   );
@@ -97,17 +101,35 @@ function CommentHeader({
   onExpand: () => void;
   onCollapse: () => void;
 }) {
-  const expanderIcon = isCollapsed ? '+' : '-';
+  const expanderIcon = isCollapsed ? "+" : "-";
   const onClickExpander = React.useCallback(() => {
     isCollapsed ? onExpand() : onCollapse();
   }, [isCollapsed, onCollapse, onExpand]);
   const linkToComment = `https://news.ycombinator.com/item?id=${comment.id}`;
   const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
-  return <div className="flex items-center gap-2 text-gray-500 text-xs pt-1">
-    <a className="hover:underline" href={linkToUser} target="_blank" referrerPolicy="no-referrer">{comment.author}</a>
-    <a className="hover:underline " href={linkToComment} target="_blank" referrerPolicy="no-referrer">{getFromNowStr(comment.created_at)}</a>
-    <button style={{ marginTop: -2 }} onClick={onClickExpander}>[{expanderIcon}]</button>
-  </div>
+  return (
+    <div className="flex items-center gap-2 text-gray-500 text-xs pt-1">
+      <a
+        className="hover:underline"
+        href={linkToUser}
+        target="_blank"
+        referrerPolicy="no-referrer"
+      >
+        {comment.author}
+      </a>
+      <a
+        className="hover:underline "
+        href={linkToComment}
+        target="_blank"
+        referrerPolicy="no-referrer"
+      >
+        {getFromNowStr(comment.created_at)}
+      </a>
+      <button style={{ marginTop: -2 }} onClick={onClickExpander}>
+        [{expanderIcon}]
+      </button>
+    </div>
+  );
 }
 
 function makeLink(id: number) {

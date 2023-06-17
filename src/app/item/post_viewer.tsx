@@ -64,6 +64,7 @@ const useResults = (data: Story | undefined, filterText: string) => {
     () =>
       data && (
         <CommentResults
+          submissionLink={data.url}
           title={data.title}
           comments={data.children}
           filterText={filterText}
@@ -99,7 +100,7 @@ function FilterText(props: {
 }) {
   return (
     <input
-      className="border rounded-md"
+      className="border rounded-md px-1"
       placeholder="Filter comments..."
       onChange={(e) => props.onChange(e.target.value)}
       value={props.value}

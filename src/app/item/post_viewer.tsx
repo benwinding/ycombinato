@@ -34,17 +34,18 @@ const PostViewer = () => {
       enabled: postId != null,
     }
   );
-  const textFilterDebounced = useDebounce(textFilter, 1000);
+  const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);
   const data = query.data;
   const dataSorted = useDataSort(data, sortOption);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
   const results = useResults(dataFiltered?.data);
+  const markCount = dataFiltered?.markCount;
   return (
     <div className="flex flex-col py-1 px-2">
       <div className="flex gap-2">
         <SortOptions onChange={setSortOoption} value={sortOption} />
         <FilterText onChange={setTextFilter} value={textFilter} />
-        Found {dataFiltered?.markCount} results
+        {markCount != null && <FilterResultsCount count={markCount} loading={debounceLoading} />}
       </div>
       {/* <SearchField value={searchText} onChange={setSearchText} /> */}
       {query.isLoading && query.isFetching && <div>Loading...</div>}
@@ -52,6 +53,15 @@ const PostViewer = () => {
     </div>
   );
 };
+
+function FilterResultsCount(props: { count: number, loading: boolean }) {
+  if (props.loading) {
+    return <div>Searching...</div>;
+  }
+  return <div>
+    Found {props.count} results
+  </div>
+}
 
 const useResults = (data: Story | undefined) => {
   const results = useMemo(

@@ -32,7 +32,7 @@ const PostViewer = () => {
       data
         ? sortChildren(data, {
             byResponseCount: sortOption === Option.byResponseCount,
-            byThreadLength: sortOption === Option.byThreadLength,
+            byThreadDepth: sortOption === Option.byThreadDepth,
           })
         : undefined,
     [data, sortOption]
@@ -51,14 +51,14 @@ const PostViewer = () => {
 
 const enum Option {
   byResponseCount = "Sort by response count",
-  byThreadLength = "Sort by thread length",
+  byThreadDepth = "Sort by thread length",
 }
 
 function SortOptions(props: {
   value: Option | undefined;
   onChange: (value: Option) => void;
 }) {
-  const options: Option[] = [Option.byResponseCount, Option.byThreadLength];
+  const options: Option[] = [Option.byResponseCount, Option.byThreadDepth];
 
   return (
     <div className="flex items-center gap-2">

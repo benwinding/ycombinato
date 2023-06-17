@@ -5,7 +5,7 @@ type HasChildren = {
 export function sortChildren<T extends HasChildren>(
   story: T,
   opts: {
-    byThreadLength: boolean;
+    byThreadDepth: boolean;
     byResponseCount: boolean;
   }
 ): T {
@@ -14,7 +14,7 @@ export function sortChildren<T extends HasChildren>(
   }
   const storySorted: T = { ...story };
 
-  if (opts.byThreadLength) {
+  if (opts.byThreadDepth) {
     const getDeepestChildLevel = (
       count: number,
       comment: HasChildren
@@ -32,7 +32,7 @@ export function sortChildren<T extends HasChildren>(
       }, 0);
       return deepestChildCount;
     };
-    const sortByThreadLength = (
+    const sortbyThreadDepth = (
       comment1: HasChildren,
       comment2: HasChildren
     ): number => {
@@ -40,7 +40,7 @@ export function sortChildren<T extends HasChildren>(
         getDeepestChildLevel(0, comment2) - getDeepestChildLevel(0, comment1)
       );
     };
-    storySorted.children = storySorted.children.sort(sortByThreadLength);
+    storySorted.children = storySorted.children.sort(sortbyThreadDepth);
   }
   if (opts.byResponseCount) {
     const sortByResponseCount = (

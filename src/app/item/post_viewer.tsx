@@ -1,10 +1,15 @@
 "use client";
 import React, { useMemo } from "react";
-import { useUrlParams, fetchHackerNewsPost, StoryComment } from "./fetcher";
+import {
+  useUrlParams,
+  fetchHackerNewsPost,
+  StoryComment,
+  Story,
+} from "./fetcher";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
-import useDebounce from "./useDebounce";
+import { useDebounce } from "./useDebounce";
 
 export const PostViewerWrapper = React.memo(function Wrapper() {
   return (
@@ -28,7 +33,35 @@ const PostViewer = () => {
       enabled: postId != null,
     }
   );
+  const textFilterDebounced = useDebounce(textFilter, 1000);
   const data = query.data;
+  const dataSorted = useDataSort(data, sortOption);
+  const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
+  const results = useResults(dataFiltered?.data);
+  return (
+    <div className="flex flex-col py-1 px-2">
+      <div className="flex gap-2">
+        <SortOptions onChange={setSortOoption} value={sortOption} />
+        <FilterText onChange={setTextFilter} value={textFilter} />
+        Found {dataFiltered?.markCount} results
+      </div>
+      {/* <SearchField value={searchText} onChange={setSearchText} /> */}
+      {query.isLoading && query.isFetching && <div>Loading...</div>}
+      {results}
+    </div>
+  );
+};
+
+const useResults = (data: Story | undefined) => {
+  const results = useMemo(
+    () =>
+      data && <CommentResults title={data.title} comments={data.children} />,
+    [data]
+  );
+  return results;
+};
+
+const useDataSort = (data: Story | undefined, sortOption: Option) => {
   const dataSorted = useMemo(
     () =>
       data
@@ -39,30 +72,50 @@ const PostViewer = () => {
         : undefined,
     [data, sortOption]
   );
-  const textFilterDebounced = useDebounce(textFilter, 1000);
-  const results = useMemo(
-    () =>
-      dataSorted && (
-        <CommentResults
-          title={dataSorted.title}
-          comments={dataSorted.children}
-          filterBy={textFilterDebounced}
-        />
-      ),
-    [dataSorted, textFilterDebounced]
-  );
-  return (
-    <div className="flex flex-col py-1 px-2">
-      <div className="flex gap-2">
-        <SortOptions onChange={setSortOoption} value={sortOption} />
-        <FilterText onChange={setTextFilter} value={textFilter} />
-      </div>
-      {/* <SearchField value={searchText} onChange={setSearchText} /> */}
-      {query.isLoading && query.isFetching && <div>Loading...</div>}
-      {results}
-    </div>
-  );
+  return dataSorted;
 };
+
+const useDataFiltered = (
+  data: Story | undefined,
+  filterText: string
+): { data: Story; markCount: number } | undefined => {
+  const dataFiltered = useMemo(() => {
+    if (!data) {
+      return undefined;
+    }
+    if (!filterText.trim()) {
+      return { data, markCount: 0 };
+    }
+    return markAndCountChildren(data, filterText);
+  }, [data, filterText]);
+  return dataFiltered;
+};
+
+function markAndCountChildren(
+  data: Story,
+  filterText: string
+): { data: Story; markCount: number } {
+  const markedStory: Story = {...data};
+  const markCount = markedStory.children.reduce((a, comment) => {
+    const markCountFromChildren = recursiveMarkAndCountChildren(
+      comment,
+      filterText
+    );
+    return a + markCountFromChildren;
+  }, 0);
+  return { data, markCount };
+}
+
+function recursiveMarkAndCountChildren(data: StoryComment, filterText: string) {
+  let totalMarkCount = 0;
+  data.children.forEach((comment) => {
+    const res = markTheHtml(comment.text || "", filterText);
+    totalMarkCount += res.numReplacements;
+    comment.text = res.htmlNew;
+    totalMarkCount += recursiveMarkAndCountChildren(comment, filterText);
+  });
+  return totalMarkCount;
+}
 
 const enum Option {
   byResponseCount = "Sort by response count",
@@ -121,49 +174,33 @@ function RadioButton({ label, value, checked, onChange }: RadioButtonProps) {
 }
 
 const CommentResults = (props: {
-  title: string;
+  title: string | null;
   comments: StoryComment[];
-  filterBy: string;
 }) => {
   return (
     <div className="font-sans">
       <div className="flex flex-col gap-2">
         <h1 className="text-xl font-bold">{props.title}</h1>
         {props.comments.map((child) => (
-          <CommentCard
-            key={child.id}
-            comment={child}
-            filterBy={props.filterBy}
-          />
+          <CommentCard key={child.id} comment={child} />
         ))}
       </div>
     </div>
   );
 };
 
-const CommentCard = (props: { comment: StoryComment; filterBy: string }) => {
-  const highlightedHtml = useMemo(
-    () =>
-      props.filterBy
-        ? markTheHtml(props.comment.text || "", props.filterBy)
-        : props.comment.text,
-    [props.comment, props.filterBy]
-  );
+const CommentCard = ({ comment }: { comment: StoryComment }) => {
   return (
     <ul className="list-decimal bg-black bg-opacity-5 rounded pl-2">
       <div className="">
         <div
           className="text-xs py-1 pr-2"
-          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          dangerouslySetInnerHTML={{ __html: comment.text || "" }}
         />
       </div>
       <div className="flex flex-col gap-2">
-        {props.comment.children.map((child) => (
-          <CommentCard
-            key={child.id}
-            comment={child}
-            filterBy={props.filterBy}
-          />
+        {comment.children.map((child) => (
+          <CommentCard key={child.id} comment={child} />
         ))}
       </div>
     </ul>
@@ -171,5 +208,8 @@ const CommentCard = (props: { comment: StoryComment; filterBy: string }) => {
 };
 
 function markTheHtml(html: string, filterBy: string) {
-  return html.replaceAll(filterBy, "<mark>$&</mark>");
+  const regex = new RegExp(filterBy, "gi");
+  const htmlNew = html.replaceAll(filterBy, "<mark>$&</mark>");
+  const numReplacements = html.match(regex)?.length || 0;
+  return { htmlNew, numReplacements };
 }

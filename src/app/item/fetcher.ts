@@ -24,7 +24,7 @@ export type StoryComment = {
   author: string;
   title: string | null;
   url: string | null;
-  text: string;
+  text: string | undefined;
   points: number | null;
   parent_id: number;
   story_id: number;

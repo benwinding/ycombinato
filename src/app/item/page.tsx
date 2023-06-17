@@ -7,7 +7,10 @@ const Page = () => {
   React.useEffect(() => {
     setMounted(true);
   }, []);
-  const viewer = React.useMemo(() =>  mounted ? <PostViewerWrapper /> : null, [mounted]);
+  const viewer = React.useMemo(
+    () => (mounted ? <PostViewerWrapper /> : null),
+    [mounted]
+  );
   return viewer;
 };
 

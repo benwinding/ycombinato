@@ -62,7 +62,7 @@ describe("sortStory", () => {
             ["a11", [["a111"]]], //
           ],
         ],
-        ["a2"]
+        ["a2"],
       ]),
       {
         byResponseCount: false,

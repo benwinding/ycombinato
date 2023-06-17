@@ -46,10 +46,10 @@ export function sortChildren<T extends HasChildren>(
         recursiveSort(child);
       });
       return node.children;
-    }
-    console.time('sort byThreadDepth');
+    };
+    console.time("sort byThreadDepth");
     storySorted.children = recursiveSort(storySorted);
-    console.timeEnd('sort byThreadDepth');
+    console.timeEnd("sort byThreadDepth");
   }
   if (opts.byResponseCount) {
     const sortByResponseCount = (
@@ -58,9 +58,9 @@ export function sortChildren<T extends HasChildren>(
     ): number => {
       return comment2.children.length - comment1.children.length;
     };
-    console.time('sort byResponseCount');
+    console.time("sort byResponseCount");
     storySorted.children = storySorted.children.sort(sortByResponseCount);
-    console.timeEnd('sort byResponseCount');
+    console.timeEnd("sort byResponseCount");
   }
   return storySorted;
 }

@@ -15,7 +15,16 @@ export const CommentResults = (props: {
   return (
     <div className="font-sans">
       <div className="flex flex-col gap-2">
-        <a href={props.submissionLink} target="_blank" referrerPolicy="no-referrer" className="hover:underline"><h1 className="text-xl flex items-center gap-2"><ArrowTopRightOnSquareIcon width={20}/> {props.title}</h1></a>
+        <a
+          href={props.submissionLink}
+          target="_blank"
+          referrerPolicy="no-referrer"
+          className="hover:underline"
+        >
+          <h1 className="text-xl flex items-center gap-2">
+            <ArrowTopRightOnSquareIcon width={20} /> {props.title}
+          </h1>
+        </a>
         {props.comments.map((child) => (
           <CommentCard
             key={child.id}

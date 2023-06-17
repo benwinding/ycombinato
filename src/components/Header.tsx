@@ -1,16 +1,30 @@
 "use client";
-import { HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export function Header() {
   return (
-    <div className="bg-orange-500 flex justify-between items-center px-2 py-1">
-      <MenuItem href="/" icon={<HomeIcon width="15" />}>
-        YCombinato
+    <div className="bg-orange-500 text-gray-900 flex justify-between items-center px-2 py-1">
+      <MenuItem href="/">
+        <span className="flex items-end gap-2">
+          YCombinato <Ricon />
+        </span>
       </MenuItem>
-      <div className="flex gap-2 text-black">
+      <div className="flex text-black">
         <MenuItem href="/about">About</MenuItem>
       </div>
+    </div>
+  );
+}
+
+function Ricon() {
+  return (
+    <div className="-ml-1 inline-block" style={{ marginBottom: -4 }}>
+      <span
+        style={{ transform: "rotate(70deg)" }}
+        className="text-gray-500 inline-block"
+      >
+        r
+      </span>
     </div>
   );
 }

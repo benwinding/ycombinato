@@ -1,11 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
-import {
-  useUrlParams,
-  fetchHackerNewsPost,
-  StoryComment,
-  Story,
-} from "./fetcher";
+import { useUrlParams, fetchHackerNewsPost, Story } from "./fetcher";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
@@ -39,7 +34,7 @@ const PostViewer = () => {
   const data = query.data;
   const dataSorted = useDataSort(data, sortOption);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
-  const results = useResults(dataFiltered?.data, textFilterDebounced != null);
+  const results = useResults(dataFiltered?.data, textFilterDebounced);
   const markCount = dataFiltered?.markCount;
   return (
     <div className="flex flex-col py-1 px-2">
@@ -64,17 +59,17 @@ function FilterResultsCount(props: { count: number; loading: boolean }) {
   return <div>Found {props.count} results</div>;
 }
 
-const useResults = (data: Story | undefined, isFiltering: boolean) => {
+const useResults = (data: Story | undefined, filterText: string) => {
   const results = useMemo(
     () =>
       data && (
         <CommentResults
           title={data.title}
           comments={data.children}
-          isFiltering={isFiltering}
+          filterText={filterText}
         />
       ),
-    [data]
+    [data, filterText]
   );
   return results;
 };

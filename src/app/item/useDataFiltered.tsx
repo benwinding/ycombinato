@@ -50,8 +50,11 @@ function recursiveMarkAndCountChildren(
 
 function markTheHtml(html: string, filterBy: string) {
   const regex = new RegExp(escapeRegex(filterBy), "ig");
-  const htmlNew = html.replaceAll(regex, "<mark>$&</mark>");
   const numReplacements = html.match(regex)?.length || 0;
+  if (!numReplacements) {
+    return { htmlNew: undefined, numReplacements };
+  }
+  const htmlNew = html.replaceAll(regex, "<mark>$&</mark>");
   return { htmlNew, numReplacements };
 }
 

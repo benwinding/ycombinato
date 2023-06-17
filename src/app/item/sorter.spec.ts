@@ -2,7 +2,7 @@ import { sortChildren } from "./sorter";
 
 type TestStory = {
   children: TestStory[];
-}
+};
 
 const child = () => new TestBuilder();
 
@@ -16,55 +16,45 @@ class TestBuilder {
   }
 }
 
-describe('sortStory', () => {
-  it('sorts stories byResponseCount', () => {
+describe("sortStory", () => {
+  it("sorts stories byResponseCount", () => {
     const res = sortChildren(
-      child()
-        .withChild(child())
-        .withChild(child()
-          .withChild(child()
-          )
-        ).story, {
-      byResponseCount: true,
-      byThreadLength: false,
-    });
+      child().withChild(child()).withChild(child().withChild(child())).story,
+      {
+        byResponseCount: true,
+        byThreadLength: false,
+      }
+    );
     expect<TestStory>(res).toMatchObject(
-      child()
-        .withChild(child()
-          .withChild(child()
-          )
-          .withChild(child())
-        ).story);
+      child().withChild(child().withChild(child()).withChild(child())).story
+    );
   });
-  it('sorts stories byThreadLength', () => {
+  it("sorts stories byThreadLength", () => {
     const res = sortChildren(
       child()
-        .withChild(child()
-          .withChild(child())
-          .withChild(child())
-          .withChild(child())
-          .withChild(child())
-        )
-        .withChild(child()
-          .withChild(child()
+        .withChild(
+          child()
             .withChild(child())
-          )
-        ).story, {
-      byResponseCount: false,
-      byThreadLength: true,
-    });
+            .withChild(child())
+            .withChild(child())
+            .withChild(child())
+        )
+        .withChild(child().withChild(child().withChild(child()))).story,
+      {
+        byResponseCount: false,
+        byThreadLength: true,
+      }
+    );
     expect<TestStory>(res).toMatchObject(
       child()
-        .withChild(child()
-          .withChild(child()
+        .withChild(child().withChild(child().withChild(child())))
+        .withChild(
+          child()
             .withChild(child())
-          )
-        ).withChild(child()
-          .withChild(child())
-          .withChild(child())
-          .withChild(child())
-          .withChild(child())
-        )
-        .story);
+            .withChild(child())
+            .withChild(child())
+            .withChild(child())
+        ).story
+    );
   });
 });

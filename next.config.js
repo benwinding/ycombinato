@@ -3,8 +3,8 @@ module.exports = {
   reactStrictMode: true,
   trailingSlash: false,
   distDir: "dist-export",
-  output: 'export',
+  output: "export",
   experimental: {
     appDir: true,
-  }
-}
+  },
+};

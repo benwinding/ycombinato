@@ -8,8 +8,5 @@
     "jsx": "react"
   },
   "include": ["src/**/*.spec.ts"],
-  "exclude": [
-    "node_modules",
-    "upload_server/**/*"
-  ]
+  "exclude": ["node_modules", "upload_server/**/*"]
 }

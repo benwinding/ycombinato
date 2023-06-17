@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { QueryClient } from "react-query";
 import { createWebStoragePersistor } from "react-query/createWebStoragePersistor-experimental";
 import { persistQueryClient } from "react-query/persistQueryClient-experimental";
@@ -20,7 +20,7 @@ const getLocalStorage = () => {
   } catch (e) {
     return null as any;
   }
-}
+};
 
 const localStoragePersistor = createWebStoragePersistor({
   storage: getLocalStorage(),

@@ -25,6 +25,7 @@ export type StoryComment = {
   title: string | null;
   url: string | null;
   text: string | undefined;
+  textMarked: string | undefined;
   points: number | null;
   parent_id: number;
   story_id: number;

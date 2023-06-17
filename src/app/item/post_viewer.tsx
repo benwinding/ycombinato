@@ -10,6 +10,7 @@ import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
 import { useDebounce } from "./useDebounce";
+import { useDataFiltered } from "./useDataFiltered";
 
 export const PostViewerWrapper = React.memo(function Wrapper() {
   return (
@@ -53,6 +54,9 @@ const PostViewer = () => {
 };
 
 const useResults = (data: Story | undefined) => {
+  React.useEffect(() => {
+    console.log('data changed...');
+  }, [data]);
   const results = useMemo(
     () =>
       data && <CommentResults title={data.title} comments={data.children} />,
@@ -75,47 +79,6 @@ const useDataSort = (data: Story | undefined, sortOption: Option) => {
   return dataSorted;
 };
 
-const useDataFiltered = (
-  data: Story | undefined,
-  filterText: string
-): { data: Story; markCount: number } | undefined => {
-  const dataFiltered = useMemo(() => {
-    if (!data) {
-      return undefined;
-    }
-    if (!filterText.trim()) {
-      return { data, markCount: 0 };
-    }
-    return markAndCountChildren(data, filterText);
-  }, [data, filterText]);
-  return dataFiltered;
-};
-
-function markAndCountChildren(
-  data: Story,
-  filterText: string
-): { data: Story; markCount: number } {
-  const markedStory: Story = {...data};
-  const markCount = markedStory.children.reduce((a, comment) => {
-    const markCountFromChildren = recursiveMarkAndCountChildren(
-      comment,
-      filterText
-    );
-    return a + markCountFromChildren;
-  }, 0);
-  return { data, markCount };
-}
-
-function recursiveMarkAndCountChildren(data: StoryComment, filterText: string) {
-  let totalMarkCount = 0;
-  data.children.forEach((comment) => {
-    const res = markTheHtml(comment.text || "", filterText);
-    totalMarkCount += res.numReplacements;
-    comment.text = res.htmlNew;
-    totalMarkCount += recursiveMarkAndCountChildren(comment, filterText);
-  });
-  return totalMarkCount;
-}
 
 const enum Option {
   byResponseCount = "Sort by response count",
@@ -190,12 +153,13 @@ const CommentResults = (props: {
 };
 
 const CommentCard = ({ comment }: { comment: StoryComment }) => {
+  const html = comment.textMarked || comment.text || "";
   return (
     <ul className="list-decimal bg-black bg-opacity-5 rounded pl-2">
       <div className="">
         <div
           className="text-xs py-1 pr-2"
-          dangerouslySetInnerHTML={{ __html: comment.text || "" }}
+          dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -206,10 +170,3 @@ const CommentCard = ({ comment }: { comment: StoryComment }) => {
     </ul>
   );
 };
-
-function markTheHtml(html: string, filterBy: string) {
-  const regex = new RegExp(filterBy, "gi");
-  const htmlNew = html.replaceAll(filterBy, "<mark>$&</mark>");
-  const numReplacements = html.match(regex)?.length || 0;
-  return { htmlNew, numReplacements };
-}

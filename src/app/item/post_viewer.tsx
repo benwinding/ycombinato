@@ -1,6 +1,11 @@
 "use client";
 import React, { useMemo } from "react";
-import { useUrlParams, fetchHackerNewsPost, Story } from "./fetcher";
+import {
+  useUrlParams,
+  fetchHackerNewsPost,
+  Story,
+  StoryComment,
+} from "./fetcher";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
@@ -34,8 +39,13 @@ const PostViewer = () => {
   const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);
   const data = query.data;
   const dataSorted = useDataSort(data, sortOption);
+  const commentCount = useCommentCount(data);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
-  const results = useResults(dataFiltered?.data, textFilterDebounced);
+  const results = useResults(
+    dataFiltered?.data,
+    textFilterDebounced,
+    commentCount
+  );
   const markCount = dataFiltered?.markCount;
   return (
     <div className="flex flex-col py-1 px-2">
@@ -76,19 +86,36 @@ function FilterResultsCount(props: {
   return <div>Found {props.count} results</div>;
 }
 
-const useResults = (data: Story | undefined, filterText: string) => {
+function useCommentCount(data: Story | undefined): number {
+  if (!data) {
+    return 0;
+  }
+  function recursiveCommentCount(children: StoryComment[]): number {
+    const childrenCount = children.reduce(
+      (acc, comment) => acc + recursiveCommentCount(comment.children),
+      0
+    );
+    return children.length + childrenCount;
+  }
+  const commentCount = recursiveCommentCount(data.children);
+  return commentCount;
+}
+
+const useResults = (
+  data: Story | undefined,
+  filterText: string,
+  commentCount: number
+) => {
   const results = useMemo(
     () =>
       data && (
         <CommentResults
-          submissionLink={data.url}
-          discussionId={data.id}
-          title={data.title}
-          comments={data.children}
+          story={data}
           filterText={filterText}
+          commentCount={commentCount}
         />
       ),
-    [data, filterText]
+    [data, filterText, commentCount]
   );
   return results;
 };

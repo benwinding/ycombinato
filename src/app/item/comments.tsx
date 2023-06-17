@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StoryComment } from "./fetcher";
+import { Story, StoryComment } from "./fetcher";
 import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -8,25 +8,19 @@ import { ExternalLink } from "./ExternalLink";
 dayjs.extend(relativeTime);
 
 export const CommentResults = (props: {
-  submissionLink: string;
-  discussionId: number;
-  title: string | null;
-  comments: StoryComment[];
+  story: Story;
   filterText: string;
+  commentCount: number;
 }) => {
-  const linkToDiscussion = `https://news.ycombinator.com/item?id=${props.discussionId}`;
+  const comments = props.story.children;
   return (
     <div className="font-sans">
       <div className="flex flex-col gap-2">
-        <div className="flex gap-2 items-center justify-between">
-          <ExternalLink href={props.submissionLink}>
-            <h1 className="text-xl flex items-center gap-2">
-              <ArrowTopRightOnSquareIcon width={20} /> {props.title}
-            </h1>
-          </ExternalLink>
-          <ExternalLink href={linkToDiscussion}>(back to hn)</ExternalLink>
-        </div>
-        {props.comments.map((child) => (
+        <DiscussionHeader
+          story={props.story}
+          commentCount={props.commentCount}
+        />
+        {comments.map((child) => (
           <CommentCard
             key={child.id}
             comment={child}
@@ -37,6 +31,35 @@ export const CommentResults = (props: {
     </div>
   );
 };
+
+function DiscussionHeader({
+  story,
+  commentCount,
+}: {
+  story: Story;
+  commentCount: number;
+}) {
+  const discussionId = story.id;
+  const submissionLink = story.url;
+  const title = story.title;
+  const linkToDiscussion = `https://news.ycombinator.com/item?id=${discussionId}`;
+  return (
+    <div className="flex flex-col text-gray-700">
+      <div className="flex gap-2 items-center justify-between">
+        <ExternalLink href={submissionLink}>
+          <h1 className="text flex items-center gap-2">{title}</h1>
+        </ExternalLink>
+        <ExternalLink href={linkToDiscussion} className="text-xs flex-shrink-0">
+          (back to hn)
+        </ExternalLink>
+      </div>
+      <div className="text-xs">
+        {story.points} points by {story.author}{" "}
+        {getFromNowStr(story.created_at)} | {commentCount} comments
+      </div>
+    </div>
+  );
+}
 
 const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
   const { comment, filterText } = props;
@@ -124,12 +147,12 @@ function CommentCardContent(props: {
   } = props;
   const shouldCollapseText = isThreadCollapsed || isTextCollapsed;
   return (
-    <ul className="list-decimal bg-black bg-opacity-5 rounded pl-2">
+    <ul className="list-decimal bg-black bg-opacity-5 rounded pl-1 sm:pl-2">
       <div id={id + ""}>
         {header}
         {!shouldCollapseText && (
           <div
-            className="text-xs pb-1 pr-2"
+            className="text-xs pb-1 pr-2 break-words"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
@@ -162,12 +185,14 @@ function CommentHeader({
   const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
   return (
     <div className="flex items-center gap-2 text-gray-500 text-xs py-1">
-      <ExternalLink href={linkToUser}>{comment.author}</ExternalLink>
-      <ExternalLink href={linkToComment}>
+      <ExternalLink href={linkToUser} className="flex-shrink-0">
+        {comment.author}
+      </ExternalLink>
+      <ExternalLink href={linkToComment} className="flex-shrink-0 line-clamp-1">
         {getFromNowStr(comment.created_at)}
       </ExternalLink>
-      <div className="pr-2">{expanderThread}</div>
-      <div className="flex-grow"></div>
+      <div className="">{expanderThread}</div>
+      <div className="w-full"></div>
       <div className="pr-2">{expanderText}</div>
     </div>
   );

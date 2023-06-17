@@ -10,10 +10,6 @@ export function useDataFiltered(
     if (!data) {
       return undefined;
     }
-    if (!filterText) {
-      return { data, markCount: 0 };
-    }
-    console.log("marking...");
     return markAndCountChildren(data, filterText);
   }, [data, filterText]);
   return dataFiltered;
@@ -36,9 +32,13 @@ function markAndCountChildren(
 
 function recursiveMarkAndCountChildren(comment: StoryComment, filterText: string) {
   let totalMarkCount = 0;
-  const res = markTheHtml(comment.text || "", filterText);
-  totalMarkCount += res.numReplacements;
-  comment.textMarked = res.htmlNew;
+  if (filterText) {
+    const res = markTheHtml(comment.text || "", filterText);
+    totalMarkCount += res.numReplacements;
+    comment.textMarked = res.htmlNew;
+  } else {
+    comment.textMarked = undefined;
+  }
   comment.children.forEach((comment) => {
     totalMarkCount += recursiveMarkAndCountChildren(comment, filterText);
   });
@@ -46,8 +46,13 @@ function recursiveMarkAndCountChildren(comment: StoryComment, filterText: string
 }
 
 function markTheHtml(html: string, filterBy: string) {
-  const regex = new RegExp(filterBy, "gi");
-  const htmlNew = html.replaceAll(filterBy, "<mark>$&</mark>");
+  const regex = new RegExp(escapeRegex(filterBy), "ig");
+  const htmlNew = html.replaceAll(regex, "<mark>$&</mark>");
   const numReplacements = html.match(regex)?.length || 0;
   return { htmlNew, numReplacements };
+}
+
+// https://stackoverflow.com/a/3561711/2419584
+function escapeRegex(str: string) {
+  return str.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 }

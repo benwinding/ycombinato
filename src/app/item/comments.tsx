@@ -39,74 +39,117 @@ export const CommentResults = (props: {
 };
 
 const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const { comment, filterText } = props;
   const html = comment._textMarked || comment.text || "<i>[deleted]<i/>";
-  const shouldCollapse = !comment._textMarked;
 
-  React.useEffect(() => {
-    const isFiltering = !!filterText;
-    setIsCollapsed(isFiltering && shouldCollapse);
-  }, [comment.id, filterText, shouldCollapse]);
-
-  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
-  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
-
-  const expander = (
-    <Expander
-      isCollapsed={isCollapsed}
-      onCollapse={onCollapse}
-      onExpand={onExpand}
-    />
-  );
+  const expanderText = useTextCollapse(comment._textMarked, filterText);
+  const expanderThread = useThreadCollapse();
 
   return (
     <CommentCardContent
       id={comment.id}
       html={html}
       comments={comment.children}
-      isCollapsed={isCollapsed}
-      header={<CommentHeader comment={comment} expander={expander} />}
+      isTextCollapsed={expanderText.isCollapsed}
+      isThreadCollapsed={expanderThread.isCollapsed}
+      header={
+        <CommentHeader
+          comment={comment}
+          expanderThread={
+            <Expander
+              isCollapsed={expanderThread.isCollapsed}
+              onCollapse={expanderThread.onCollapse}
+              onExpand={expanderThread.onExpand}
+            />
+          }
+          expanderText={
+            <Expander
+              isCollapsed={expanderText.isCollapsed}
+              onCollapse={expanderText.onCollapse}
+              onExpand={expanderText.onExpand}
+            />
+          }
+        />
+      }
       filterText={filterText}
     />
   );
 };
 
+function useThreadCollapse() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
+  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
+  return { isCollapsed, onCollapse, onExpand };
+}
+
+function useTextCollapse(textMarked: string | undefined, filterText: string) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const shouldCollapse = !textMarked;
+
+  React.useEffect(() => {
+    const isFiltering = !!filterText;
+    setIsCollapsed(isFiltering && shouldCollapse);
+  }, [filterText, shouldCollapse]);
+
+  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
+  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
+  return { isCollapsed, onCollapse, onExpand };
+}
+
 function CommentCardContent(props: {
   id: number;
   comments: StoryComment[];
   header: React.ReactElement;
-  isCollapsed: boolean;
+  isTextCollapsed: boolean;
+  isThreadCollapsed: boolean;
   filterText: string;
   html: string;
 }) {
-  const { comments, isCollapsed, filterText, html } = props;
+  const {
+    id,
+    comments,
+    header,
+    isTextCollapsed,
+    isThreadCollapsed,
+    filterText,
+    html,
+  } = props;
+  const shouldCollapseText = isThreadCollapsed || isTextCollapsed;
   return (
     <ul className="list-decimal bg-black bg-opacity-5 rounded pl-2">
-      <div id={props.id + ""}>
-        {props.header}
-        {!isCollapsed && (
+      <div id={id + ""}>
+        {header}
+        {!shouldCollapseText && (
           <div
             className="text-xs pb-1 pr-2"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
       </div>
-      <div className="flex flex-col gap-2">
-        {comments.map((child) => (
-          <CommentCard key={child.id} comment={child} filterText={filterText} />
-        ))}
-      </div>
+      {!isThreadCollapsed && (
+        <div className="flex flex-col gap-2">
+          {comments.map((child) => (
+            <CommentCard
+              key={child.id}
+              comment={child}
+              filterText={filterText}
+            />
+          ))}
+        </div>
+      )}
     </ul>
   );
 }
 
 function CommentHeader({
   comment,
-  expander,
+  expanderThread,
+  expanderText,
 }: {
   comment: StoryComment;
-  expander: React.ReactNode;
+  expanderThread: React.ReactNode;
+  expanderText: React.ReactNode;
 }) {
   const linkToComment = `https://news.ycombinator.com/item?id=${comment.id}`;
   const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
@@ -116,8 +159,9 @@ function CommentHeader({
       <ExternalLink href={linkToComment}>
         {getFromNowStr(comment.created_at)}
       </ExternalLink>
+      <div className="pr-2">{expanderThread}</div>
       <div className="flex-grow"></div>
-      <div className="pr-2">{expander}</div>
+      <div className="pr-2">{expanderText}</div>
     </div>
   );
 }

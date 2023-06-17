@@ -30,7 +30,10 @@ function markAndCountChildren(
   return { data: markedStory, markCount };
 }
 
-function recursiveMarkAndCountChildren(comment: StoryComment, filterText: string) {
+function recursiveMarkAndCountChildren(
+  comment: StoryComment,
+  filterText: string
+) {
   let totalMarkCount = 0;
   if (filterText) {
     const res = markTheHtml(comment.text || "", filterText);
@@ -54,5 +57,5 @@ function markTheHtml(html: string, filterBy: string) {
 
 // https://stackoverflow.com/a/3561711/2419584
 function escapeRegex(str: string) {
-  return str.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+  return str.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }

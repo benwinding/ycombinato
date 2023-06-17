@@ -11,6 +11,7 @@ import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
 import { useDebounce } from "./useDebounce";
 import { useDataFiltered } from "./useDataFiltered";
+import { CommentResults } from "./comments";
 
 export const PostViewerWrapper = React.memo(function Wrapper() {
   return (
@@ -38,14 +39,16 @@ const PostViewer = () => {
   const data = query.data;
   const dataSorted = useDataSort(data, sortOption);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
-  const results = useResults(dataFiltered?.data);
+  const results = useResults(dataFiltered?.data, textFilterDebounced != null);
   const markCount = dataFiltered?.markCount;
   return (
     <div className="flex flex-col py-1 px-2">
       <div className="flex gap-2">
         <SortOptions onChange={setSortOoption} value={sortOption} />
         <FilterText onChange={setTextFilter} value={textFilter} />
-        {markCount != null && <FilterResultsCount count={markCount} loading={debounceLoading} />}
+        {markCount != null && (
+          <FilterResultsCount count={markCount} loading={debounceLoading} />
+        )}
       </div>
       {/* <SearchField value={searchText} onChange={setSearchText} /> */}
       {query.isLoading && query.isFetching && <div>Loading...</div>}
@@ -54,19 +57,23 @@ const PostViewer = () => {
   );
 };
 
-function FilterResultsCount(props: { count: number, loading: boolean }) {
+function FilterResultsCount(props: { count: number; loading: boolean }) {
   if (props.loading) {
     return <div>Searching...</div>;
   }
-  return <div>
-    Found {props.count} results
-  </div>
+  return <div>Found {props.count} results</div>;
 }
 
-const useResults = (data: Story | undefined) => {
+const useResults = (data: Story | undefined, isFiltering: boolean) => {
   const results = useMemo(
     () =>
-      data && <CommentResults title={data.title} comments={data.children} />,
+      data && (
+        <CommentResults
+          title={data.title}
+          comments={data.children}
+          isFiltering={isFiltering}
+        />
+      ),
     [data]
   );
   return results;
@@ -141,38 +148,3 @@ function RadioButton({ label, value, checked, onChange }: RadioButtonProps) {
     </label>
   );
 }
-
-const CommentResults = (props: {
-  title: string | null;
-  comments: StoryComment[];
-}) => {
-  return (
-    <div className="font-sans">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-xl font-bold">{props.title}</h1>
-        {props.comments.map((child) => (
-          <CommentCard key={child.id} comment={child} />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const CommentCard = ({ comment }: { comment: StoryComment }) => {
-  const html = comment.textMarked || comment.text || "";
-  return (
-    <ul className="list-decimal bg-black bg-opacity-5 rounded pl-2">
-      <div className="">
-        <div
-          className="text-xs py-1 pr-2"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        {comment.children.map((child) => (
-          <CommentCard key={child.id} comment={child} />
-        ))}
-      </div>
-    </ul>
-  );
-};

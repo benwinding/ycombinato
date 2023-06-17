@@ -9,16 +9,14 @@ export function Header() {
         YCombinato
       </MenuItem>
       <div className="flex gap-2 text-black">
-        {/* <MenuItem href="/search/post" icon={<MagnifyingGlassIcon width="15" />}>
-          Post
-        </MenuItem> */}
+        <MenuItem href="/about">About</MenuItem>
       </div>
     </div>
   );
 }
 
 function MenuItem(
-  props: React.PropsWithChildren<{ href: string; icon: React.ReactNode }>
+  props: React.PropsWithChildren<{ href: string; icon?: React.ReactNode }>
 ) {
   return (
     <Link className="flex flex-row gap-2 items-center" href={props.href}>

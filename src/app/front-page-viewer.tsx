@@ -20,7 +20,7 @@ type StoryFrontPageJson = {
 };
 
 const fetchHackerNewsFrontPage = async () => {
-  const url = "http://hn.algolia.com/api/v1/search?tags=front_page";
+  const url = "https://hn.algolia.com/api/v1/search?tags=front_page";
   return fetch(url).then(
     (response) => response.json() as unknown as StoryFrontPageJson
   );

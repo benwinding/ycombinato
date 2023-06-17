@@ -38,9 +38,9 @@ function recursiveMarkAndCountChildren(
   if (filterText) {
     const res = markTheHtml(comment.text || "", filterText);
     totalMarkCount += res.numReplacements;
-    comment.textMarked = res.htmlNew;
+    comment._textMarked = res.htmlNew;
   } else {
-    comment.textMarked = undefined;
+    comment._textMarked = undefined;
   }
   comment.children.forEach((comment) => {
     totalMarkCount += recursiveMarkAndCountChildren(comment, filterText);

@@ -32,7 +32,7 @@ export function sortChildren<T extends HasChildren>(
       }, 0);
       return deepestChildCount;
     };
-    const sortbyThreadDepth = (
+    const recursiveSortbyThreadDepth = (
       comment1: HasChildren,
       comment2: HasChildren
     ): number => {
@@ -40,7 +40,16 @@ export function sortChildren<T extends HasChildren>(
         getDeepestChildLevel(0, comment2) - getDeepestChildLevel(0, comment1)
       );
     };
-    storySorted.children = storySorted.children.sort(sortbyThreadDepth);
+    const recursiveSort = (node: HasChildren): HasChildren[] => {
+      node.children.sort(recursiveSortbyThreadDepth);
+      node.children.forEach((child) => {
+        recursiveSort(child);
+      });
+      return node.children;
+    }
+    console.time('sort byThreadDepth');
+    storySorted.children = recursiveSort(storySorted);
+    console.timeEnd('sort byThreadDepth');
   }
   if (opts.byResponseCount) {
     const sortByResponseCount = (
@@ -49,7 +58,9 @@ export function sortChildren<T extends HasChildren>(
     ): number => {
       return comment2.children.length - comment1.children.length;
     };
+    console.time('sort byResponseCount');
     storySorted.children = storySorted.children.sort(sortByResponseCount);
+    console.timeEnd('sort byResponseCount');
   }
   return storySorted;
 }

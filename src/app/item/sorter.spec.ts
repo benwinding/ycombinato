@@ -52,6 +52,36 @@ describe("sortStory", () => {
       ])
     );
   });
+  it("sorts stories byThreadDepth sorts nested children too", () => {
+    const res = sortChildren(
+      convertSimpleTree([
+        [
+          "a2",
+          [
+            ["a11"], //
+            ["a11", [["a111"]]], //
+          ],
+        ],
+        ["a2"]
+      ]),
+      {
+        byResponseCount: false,
+        byThreadDepth: true,
+      }
+    );
+    expect<ChildrenObjRoot>(res).toMatchObject(
+      convertSimpleTree([
+        [
+          "a2",
+          [
+            ["a11", [["a111"]]], //
+            ["a11"], //
+          ],
+        ],
+        ["a2"],
+      ])
+    );
+  });
 });
 
 function convertSimpleTree(simpleRoot: SimpleTreeRoot): ChildrenObjRoot {

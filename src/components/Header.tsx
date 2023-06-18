@@ -1,4 +1,5 @@
 "use client";
+import { ArrowLongLeftIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export function Header() {
@@ -6,13 +7,22 @@ export function Header() {
     <div className="bg-orange-500 text-gray-900 flex justify-between items-center px-2 py-1">
       <MenuItem href="/">
         <span className="flex items-end gap-2">
-          YCombinato <Ricon />
+          YCombinato <Ricon /> <JustDropTheR />
         </span>
       </MenuItem>
       <div className="flex text-black">
         <MenuItem href="/about">About</MenuItem>
       </div>
     </div>
+  );
+}
+
+function JustDropTheR() {
+  return (
+    <span className="text-xs flex text-gray-100 italic">
+      <ArrowLongLeftIcon width={13} />
+      {"Just drop the 'r'"}
+    </span>
   );
 }
 

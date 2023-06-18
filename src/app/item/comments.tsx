@@ -197,9 +197,9 @@ function CommentHeader({
       <ExternalLink href={linkToComment} className="flex-shrink-0 line-clamp-1">
         {getFromNowStr(comment.created_at)}
       </ExternalLink>
-      <div className="">{expanderThread}</div>
+      <div className="flex-shrink-0">{expanderThread}</div>
       <div className="w-full"></div>
-      <div className="pr-2">{expanderText}</div>
+      <div className="flex-shrink-0 pr-2">{expanderText}</div>
     </div>
   );
 }

@@ -48,17 +48,53 @@ function recursiveMarkAndCountChildren(
   return totalMarkCount;
 }
 
-function markTheHtml(html: string, filterBy: string) {
-  const regex = new RegExp(escapeRegex(filterBy), "ig");
-  const numReplacements = html.match(regex)?.length || 0;
-  if (!numReplacements) {
-    return { htmlNew: undefined, numReplacements };
-  }
-  const htmlNew = html.replaceAll(regex, "<mark>$&</mark>");
-  return { htmlNew, numReplacements };
+type ReplacementResult = {
+  htmlNew: string | undefined;
+  numReplacements: number;
+};
+
+export function markTheHtml(html: string, filterBy: string): ReplacementResult {
+  const container = document.createElement("div");
+  container.innerHTML = html;
+
+  const textNodes = getTextNodes(container);
+  let numReplacements = 0;
+
+  textNodes.forEach((textNode) => {
+    const regex = new RegExp(escapeRegex(filterBy), "ig");
+    const parentElement = textNode.parentNode as HTMLElement;
+    const replacedHtml = textNode.textContent!.replace(regex, (match) => {
+      numReplacements++;
+      return `<mark>${match}</mark>`;
+    });
+
+    const replacementNode = document.createElement("span");
+    replacementNode.innerHTML = replacedHtml;
+
+    parentElement.replaceChild(replacementNode, textNode);
+  });
+
+  return {
+    htmlNew: numReplacements > 0 ? container.innerHTML : undefined,
+    numReplacements,
+  };
 }
 
-// https://stackoverflow.com/a/3561711/2419584
-function escapeRegex(str: string) {
+function getTextNodes(node: Node): Node[] {
+  const textNodes: Node[] = [];
+
+  function traverse(node: Node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      textNodes.push(node);
+    } else {
+      node.childNodes.forEach((child) => traverse(child));
+    }
+  }
+
+  traverse(node);
+  return textNodes;
+}
+
+function escapeRegex(str: string): string {
   return str.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }

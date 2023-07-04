@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Header() {
   return (
-    <div className="bg-orange-500 text-gray-900 flex justify-between items-center px-2 py-1">
+    <div className="bg-orange-500 text-gray-900 flex flex-col tiny:flex-row justify-between items-start shrink:items-center px-2 py-1">
       <MenuItem href="/">
         <span className="flex items-end gap-2">
           YCombinato <Ricon /> <JustDropTheR />
@@ -19,7 +19,7 @@ export function Header() {
 
 function JustDropTheR() {
   return (
-    <span className="text-xs flex text-gray-100 italic">
+    <span className="text-xxs flex text-gray-100 italic">
       <ArrowLongLeftIcon width={13} />
       {"Just drop the 'r'"}
     </span>

@@ -50,7 +50,7 @@ function DiscussionHeader({
   const linkToDiscussion = `https://news.ycombinator.com/item?id=${discussionId}`;
   return (
     <div className="flex flex-col text-gray-700">
-      <div className="flex gap-2 items-center justify-between">
+      <div className="flex flex-col tiny:flex-row gap-2 items-center justify-between">
         <ExternalLink href={submissionLink}>
           <h1 className="text flex items-center gap-2">{title}</h1>
         </ExternalLink>
@@ -164,11 +164,11 @@ function CommentHeader({
       <ExternalLink href={linkToUser} className="flex-shrink-0">
         {comment.author}
       </ExternalLink>
-      <ExternalLink href={linkToComment} className="flex-shrink-0 line-clamp-1">
+      <ExternalLink href={linkToComment} className="line-clamp-1">
         {getFromNowStr(comment.created_at)}
       </ExternalLink>
       <div className="flex-shrink-0">{expanderThread}</div>
-      <div className="w-full"></div>
+      <div className="flex-grow"></div>
       <div className="flex-shrink-0 pr-2">{expanderText}</div>
     </div>
   );

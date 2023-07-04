@@ -39,7 +39,7 @@ const PostViewer = () => {
   const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);
   const data = query.data;
   const dataSorted = useDataSort(data, sortOption);
-  const commentCount = useCommentCount(data);
+  const commentCountResult = React.useMemo(() => getCommentCount(data), [data]);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
   const markCount = dataFiltered?.markCount;
   const filterOptions = (
@@ -64,7 +64,7 @@ const PostViewer = () => {
   const results = useResults(
     dataFiltered?.data,
     textFilterDebounced,
-    commentCount,
+    commentCountResult,
     filterOptions
   );
   return (
@@ -89,25 +89,48 @@ function FilterResultsCount(props: {
   return <div>Found {props.count} results</div>;
 }
 
-function useCommentCount(data: Story | undefined): number {
+type CommentCountResults = {
+  totalComments: number;
+  idTotalMap: Map<number, number>;
+};
+
+type HasChildren = {
+  id: number;
+  children: HasChildren[];
+};
+
+function getCommentCount<T extends HasChildren>(
+  data: T | undefined
+): CommentCountResults {
+  let totalComments = 0;
+  const idTotalMap = new Map<number, number>();
   if (!data) {
-    return 0;
+    return {
+      totalComments,
+      idTotalMap,
+    };
   }
-  function recursiveCommentCount(children: StoryComment[]): number {
-    const childrenCount = children.reduce(
-      (acc, comment) => acc + recursiveCommentCount(comment.children),
-      0
-    );
-    return children.length + childrenCount;
-  }
-  const commentCount = recursiveCommentCount(data.children);
-  return commentCount;
+  const getChildrenCountRecursively = (parent: HasChildren): number => {
+    let childrenCount = 0;
+    parent.children.forEach((child) => {
+      totalComments++;
+      const childCount = 1 + getChildrenCountRecursively(child);
+      childrenCount += childCount;
+      idTotalMap.set(child.id, childCount);
+    });
+    return childrenCount;
+  };
+  getChildrenCountRecursively(data);
+  return {
+    totalComments,
+    idTotalMap,
+  };
 }
 
 const useResults = (
   data: Story | undefined,
   filterText: string,
-  commentCount: number,
+  commentCount: CommentCountResults,
   filterOptions: React.ReactNode
 ) => {
   const results = useMemo(
@@ -116,7 +139,8 @@ const useResults = (
         <CommentResults
           story={data}
           filterText={filterText}
-          commentCount={commentCount}
+          commentCount={commentCount.totalComments}
+          idTotalMap={commentCount.idTotalMap}
           filterOptions={filterOptions}
         />
       ),

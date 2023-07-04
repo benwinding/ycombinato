@@ -10,6 +10,7 @@ export const CommentResults = (props: {
   story: Story;
   filterText: string;
   commentCount: number;
+  idTotalMap: Map<number, number>;
   filterOptions: React.ReactNode;
 }) => {
   const comments = props.story.children;
@@ -25,6 +26,7 @@ export const CommentResults = (props: {
           <CommentCard
             key={child.id}
             comment={child}
+            idTotalMap={props.idTotalMap}
             filterText={props.filterText}
           />
         ))}
@@ -53,7 +55,7 @@ function DiscussionHeader({
           <h1 className="text flex items-center gap-2">{title}</h1>
         </ExternalLink>
         <ExternalLink href={linkToDiscussion} className="text-xs flex-shrink-0">
-          (back to hn)
+          (read on hn)
         </ExternalLink>
       </div>
       <div className="text-xs">
@@ -67,37 +69,31 @@ function DiscussionHeader({
   );
 }
 
-const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
-  const { comment, filterText } = props;
+const CommentCard = (props: {
+  comment: StoryComment;
+  idTotalMap: Map<number, number>;
+  filterText: string;
+}) => {
+  const { comment, filterText, idTotalMap } = props;
   const html = comment._textMarked || comment.text || "<i>[deleted]<i/>";
+  const commentChildrenCount = idTotalMap.get(comment.id) || 0;
 
   const expanderText = useTextCollapse(comment._textMarked, filterText);
-  const expanderThread = useThreadCollapse(filterText);
+  const expanderThread = useThreadCollapse(filterText, commentChildrenCount);
 
   return (
     <CommentCardContent
       id={comment.id}
       html={html}
       comments={comment.children}
+      idTotalMap={idTotalMap}
       isTextCollapsed={expanderText.isCollapsed}
       isThreadCollapsed={expanderThread.isCollapsed}
       header={
         <CommentHeader
           comment={comment}
-          expanderThread={
-            <Expander
-              isCollapsed={expanderThread.isCollapsed}
-              onCollapse={expanderThread.onCollapse}
-              onExpand={expanderThread.onExpand}
-            />
-          }
-          expanderText={
-            <Expander
-              isCollapsed={expanderText.isCollapsed}
-              onCollapse={expanderText.onCollapse}
-              onExpand={expanderText.onExpand}
-            />
-          }
+          expanderThread={<Expander {...expanderThread} />}
+          expanderText={<Expander {...expanderText} />}
         />
       }
       filterText={filterText}
@@ -105,37 +101,10 @@ const CommentCard = (props: { comment: StoryComment; filterText: string }) => {
   );
 };
 
-function useThreadCollapse(filterText: string) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  React.useEffect(() => {
-    if (filterText) {
-      setIsCollapsed(false);
-    }
-  }, [filterText]);
-
-  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
-  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
-  return { isCollapsed, onCollapse, onExpand };
-}
-
-function useTextCollapse(textMarked: string | undefined, filterText: string) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const shouldCollapse = !textMarked;
-
-  React.useEffect(() => {
-    const isFiltering = !!filterText;
-    setIsCollapsed(isFiltering && shouldCollapse);
-  }, [filterText, shouldCollapse]);
-
-  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
-  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
-  return { isCollapsed, onCollapse, onExpand };
-}
-
 function CommentCardContent(props: {
   id: number;
   comments: StoryComment[];
+  idTotalMap: Map<number, number>;
   header: React.ReactElement;
   isTextCollapsed: boolean;
   isThreadCollapsed: boolean;
@@ -169,6 +138,7 @@ function CommentCardContent(props: {
             <CommentCard
               key={child.id}
               comment={child}
+              idTotalMap={props.idTotalMap}
               filterText={filterText}
             />
           ))}
@@ -204,20 +174,72 @@ function CommentHeader({
   );
 }
 
-function Expander({
-  isCollapsed,
-  onExpand,
-  onCollapse,
-}: {
+function useThreadCollapse(
+  filterText: string,
+  commentCount: number | undefined
+): ExpanderProps {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  React.useEffect(() => {
+    if (filterText) {
+      setIsCollapsed(false);
+    }
+  }, [filterText]);
+
+  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
+  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
+
+  const labelIsCollapsed =
+    !!commentCount && commentCount > 1 ? `${commentCount} more` : "+";
+
+  return {
+    expanderText: isCollapsed ? labelIsCollapsed : "-",
+    isCollapsed,
+    onCollapse,
+    onExpand,
+  };
+}
+
+function useTextCollapse(
+  textMarked: string | undefined,
+  filterText: string
+): ExpanderProps {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const shouldCollapse = !textMarked;
+
+  React.useEffect(() => {
+    const isFiltering = !!filterText;
+    setIsCollapsed(isFiltering && shouldCollapse);
+  }, [filterText, shouldCollapse]);
+
+  const onCollapse = React.useCallback(() => setIsCollapsed(true), []);
+  const onExpand = React.useCallback(() => setIsCollapsed(false), []);
+
+  return {
+    expanderText: isCollapsed ? "+" : "-",
+    isCollapsed,
+    onCollapse,
+    onExpand,
+  };
+}
+
+type ExpanderProps = {
   isCollapsed: boolean;
+  expanderText: string;
   onExpand: () => void;
   onCollapse: () => void;
-}) {
-  const expanderIcon = isCollapsed ? "+" : "-";
+};
+
+function Expander({
+  isCollapsed,
+  expanderText,
+  onExpand,
+  onCollapse,
+}: ExpanderProps) {
   const onClickExpander = React.useCallback(() => {
     isCollapsed ? onExpand() : onCollapse();
   }, [isCollapsed, onCollapse, onExpand]);
-  return <button onClick={onClickExpander}>[{expanderIcon}]</button>;
+  return <button onClick={onClickExpander}>[{expanderText}]</button>;
 }
 
 function getFromNowStr(input: string): string {

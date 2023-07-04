@@ -3,23 +3,26 @@ type HasChildren = {
 };
 
 function superNaiveDeepClone<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj))
+  return JSON.parse(JSON.stringify(obj));
 }
 
 type SortChildrenOpts = {
   byThreadDepth: boolean;
   byResponseCount: boolean;
-}
+};
 
 export function sortChildren<T extends HasChildren>(
   story: T,
-  opts: SortChildrenOpts,
+  opts: SortChildrenOpts
 ): T {
   if (!story) {
     return story;
   }
   const storySorted = superNaiveDeepClone<T>(story);
-  const recursiveSort = (node: HasChildren, sortFn: CommentSortFunction): HasChildren[] => {
+  const recursiveSort = (
+    node: HasChildren,
+    sortFn: CommentSortFunction
+  ): HasChildren[] => {
     node.children.sort(sortFn);
     node.children.forEach((child) => {
       recursiveSort(child, sortFn);
@@ -48,10 +51,7 @@ type CommentSortFunction = (
   comment2: HasChildren
 ) => number;
 
-const getDeepestChildLevel = (
-  count: number,
-  comment: HasChildren
-): number => {
+const getDeepestChildLevel = (count: number, comment: HasChildren): number => {
   const children = comment.children || [];
   if (!children.length) {
     return count;
@@ -69,9 +69,7 @@ const sortbyThreadDepthFn: CommentSortFunction = (
   comment1: HasChildren,
   comment2: HasChildren
 ): number => {
-  return (
-    getDeepestChildLevel(0, comment2) - getDeepestChildLevel(0, comment1)
-  );
+  return getDeepestChildLevel(0, comment2) - getDeepestChildLevel(0, comment1);
 };
 const sortByResponseCount: CommentSortFunction = (
   comment1: HasChildren,

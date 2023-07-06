@@ -8,7 +8,7 @@ module.exports = {
       tiny: "240px",
     },
     fontSize: {
-      'xxs': '0.625rem', // 10px
+      xxs: "0.625rem", // 10px
     },
   },
 };

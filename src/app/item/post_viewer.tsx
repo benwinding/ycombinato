@@ -4,7 +4,6 @@ import {
   useUrlParams,
   fetchHackerNewsPost,
   Story,
-  StoryComment,
 } from "./fetcher";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
@@ -13,6 +12,7 @@ import { useDebounce } from "./useDebounce";
 import { useDataFiltered } from "./useDataFiltered";
 import { CommentResults } from "./comments";
 import { XCircleIcon } from "@heroicons/react/24/solid";
+import { LoadingScreen } from "@/components/loading_screen";
 
 export const PostViewerWrapper = () => {
   return (
@@ -69,7 +69,7 @@ const PostViewer = () => {
   );
   return (
     <div className="flex flex-col py-1 px-2">
-      {query.isLoading && query.isFetching && <div>Loading...</div>}
+      {query.isLoading && query.isFetching && <LoadingScreen/>}
       {results}
     </div>
   );

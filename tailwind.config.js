@@ -4,11 +4,13 @@ module.exports = {
   purge: ["./src/**/*.{js,ts,jsx,tsx}"],
   plugins: [],
   theme: {
-    screens: {
-      tiny: "240px",
-    },
-    fontSize: {
-      xxs: "0.625rem", // 10px
+    extend: {
+      screens: {
+        tiny: "240px",
+      },  
+      fontSize: {
+        xxs: "0.625rem", // 10px
+      }
     },
   },
 };

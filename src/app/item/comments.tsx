@@ -135,7 +135,7 @@ function CommentCardContent(props: {
         {header}
         {!shouldCollapseText && (
           <div
-            className="text-xs pb-1 pr-2 break-words"
+            className="text-xs pr-2 comment-text"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}

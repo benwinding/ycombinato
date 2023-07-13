@@ -10,3 +10,12 @@ code {
 * {
   -webkit-tap-highlight-color: rgba(235, 0, 0, 0.04);
 }
+
+.comment-text {
+  overflow-wrap: break-word;
+}
+
+.comment-text p {
+  padding-bottom: 0.3rem;
+  padding-right: 0.5rem;
+}

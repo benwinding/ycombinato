@@ -1,5 +1,16 @@
 "use client";
-import React from "react";
+import { useQuery } from "react-query";
+
+export function useHnPost(postId: string) {
+  const query = useQuery(
+    "post-" + postId,
+    () => fetchHackerNewsPost(postId + ""),
+    {
+      enabled: postId != null,
+    }
+  );
+  return query;
+}
 
 export type Story = {
   id: number;
@@ -32,19 +43,7 @@ export type StoryComment = {
   children: StoryComment[];
 };
 
-export const fetchHackerNewsPost = async (itemId: string) => {
+const fetchHackerNewsPost = async (itemId: string) => {
   const url = `https://hn.algolia.com/api/v1/items/${itemId}`;
   return fetch(url).then((response) => response.json() as unknown as Story);
-};
-
-export const useUrlParams = () => {
-  const [id, setId] = React.useState<URLSearchParams>();
-  React.useEffect(() => {
-    // Get the query string from the URL
-    const queryString = window.location.search;
-    // Create a new URLSearchParams object from the query string
-    const searchParams = new URLSearchParams(queryString);
-    setId(searchParams);
-  }, []);
-  return id;
 };

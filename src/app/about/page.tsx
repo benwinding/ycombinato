@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { ExternalLink } from "../item/ExternalLink";
+import { ExternalLink } from "@/components/ExternalLink";
 
 const sourceLink = "https://github.com/benwinding/ycombinato";
 

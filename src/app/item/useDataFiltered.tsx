@@ -1,6 +1,6 @@
 "use client";
+import { Story, StoryComment } from "@/api/use-hn-post";
 import { useMemo } from "react";
-import { Story, StoryComment } from "./fetcher";
 
 export function useDataFiltered(
   data: Story | undefined,

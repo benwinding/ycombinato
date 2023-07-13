@@ -1,5 +1,5 @@
+import { getFromNowStr } from "@/components/time";
 import React from "react";
-import { getFromNowStr } from "./fromNow";
 
 export function ExternalLink(
   props: React.PropsWithChildren<{ href: string; className?: string }>

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Story, StoryComment } from "./fetcher";
 import React from "react";
 import {
   ExternalLink,
   LinkToAuthor,
   LinkToDiscussion,
   LinkToDiscussionWrapper,
-} from "./ExternalLink";
+} from "@/components/ExternalLink";
+import { Story, StoryComment } from "@/api/use-hn-post";
 
 export const CommentResults = (props: {
   story: Story;

@@ -1,14 +1,15 @@
 "use client";
 import React, { useMemo } from "react";
-import { useUrlParams, fetchHackerNewsPost, Story } from "./fetcher";
-import { QueryClientProvider, useQuery } from "react-query";
-import { queryClient } from "./query_client";
+import { QueryClientProvider } from "react-query";
 import { sortChildren } from "./sorter";
 import { useDebounce } from "./useDebounce";
 import { useDataFiltered } from "./useDataFiltered";
 import { CommentResults } from "./comments";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { LoadingScreen } from "@/components/loading_screen";
+import { queryClient } from "@/api/query_client";
+import { useUrlParams } from "./useUrlParams";
+import { Story, useHnPost } from "@/api/use-hn-post";
 
 export const PostViewerWrapper = () => {
   return (
@@ -25,13 +26,8 @@ const PostViewer = () => {
   const [textFilter, setTextFilter] = React.useState<string>("");
   const params = useUrlParams();
   const postId = params?.get("id");
-  const query = useQuery(
-    "post" + postId,
-    () => fetchHackerNewsPost(postId + ""),
-    {
-      enabled: postId != null,
-    }
-  );
+  const query = useHnPost(postId + "");
+
   const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);
   const data = query.data;
   const dataSorted = useDataSort(data, sortOption);

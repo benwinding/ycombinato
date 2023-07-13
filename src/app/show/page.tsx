@@ -1,22 +1,26 @@
 "use client";
-import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
 import React from "react";
+import { getNow, getNowMinus } from "@/components/time";
+import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
 
 const Page = () => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
+  const createdAfterI = getNowMinus(2, "hours");
+  const createdBeforeI = getNow();
+
   const viewer = React.useMemo(
     () =>
       mounted ? (
         <FrontPageViewerWrapper
-          tag="front_page"
-          createdAfterI={168924730}
-          createdBeforeI={0}
+          tag="show_hn"
+          createdAfterI={createdAfterI}
+          createdBeforeI={createdBeforeI}
         />
       ) : null,
-    [mounted]
+    [createdAfterI, createdBeforeI, mounted]
   );
 
   return (

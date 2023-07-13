@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
 export function useDebounce(value: string, delay: number): [string, boolean] {

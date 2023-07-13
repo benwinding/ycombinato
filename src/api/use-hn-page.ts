@@ -42,8 +42,11 @@ export type StoryItem = {
   url: string;
 };
 
-type StoryFrontPageJson = {
+export type StoryFrontPageJson = {
   hits: StoryItem[];
+  nbPages: number;
+  hitsPerPage: number;
+  page: number;
 };
 
 async function fetchHackerNewsFrontPage(args: FrontPageQuery) {
@@ -57,7 +60,7 @@ function getQueryUrl(args: FrontPageQuery): string {
   const b = new QueryBuilder();
   b.addTag(args.tag);
   b.addPageSize(args.pageSize);
-  b.addPage(args.page);
+  b.addPage(args.page - 1);
   if (args.tag !== "front_page") {
     b.addCreatedBeforeAfter({
       before: args.createdBeforeI,

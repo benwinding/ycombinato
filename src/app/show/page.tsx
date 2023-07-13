@@ -2,6 +2,7 @@
 import React from "react";
 import { getNow, getNowMinus } from "@/components/time";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
+import { usePageFromParams } from "@/components/usePageFromParams";
 
 const Page = () => {
   const [mounted, setMounted] = React.useState(false);
@@ -10,19 +11,20 @@ const Page = () => {
   }, []);
   const createdAfterI = getNowMinus(24, "hours");
   const createdBeforeI = getNow();
+  const page = usePageFromParams();
 
   const viewer = React.useMemo(
     () =>
       mounted ? (
         <FrontPageViewerWrapper
           tag="show_hn"
-          page={0}
-          pageSize={10}
+          page={page}
+          pageSize={30}
           createdAfterI={createdAfterI}
           createdBeforeI={createdBeforeI}
         />
       ) : null,
-    [createdAfterI, createdBeforeI, mounted]
+    [createdAfterI, createdBeforeI, mounted, page]
   );
 
   return (

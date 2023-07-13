@@ -7,14 +7,14 @@ const links = ["ask", "show"];
 
 export function Header() {
   return (
-    <div className="bg-orange-500 text-gray-900 flex flex-col tiny:flex-row justify-between items-start shrink:items-center px-2 py-1">
-      <div className="flex flex-col">
-        <MenuItem href="/">
-          <span className="flex items-end gap-2">
-            YCombinato <Ricon /> <JustDropTheR />
-          </span>
-        </MenuItem>
-        <div className="flex text-xs gap-2">
+    <div className="bg-orange-500 text-gray-900 flex flex-col px-2 py-1 w-full">
+      <MenuItem href="/">
+        <span className="flex items-end gap-2">
+          YCombinato <Ricon /> <JustDropTheR />
+        </span>
+      </MenuItem>
+      <div className="flex justify-between flex-wrap w-full">
+        <div className="flex items-center text-xs gap-2">
           {links.map((link, index) => (
             <Fragment key={link}>
               {index !== 0 && "|"}
@@ -24,9 +24,9 @@ export function Header() {
             </Fragment>
           ))}
         </div>
-      </div>
-      <div className="flex text-black">
-        <MenuItem href="/about">About</MenuItem>
+        <div className="text-xs text-black">
+          <MenuItem href="/about">About</MenuItem>
+        </div>
       </div>
     </div>
   );

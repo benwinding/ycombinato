@@ -1,11 +1,11 @@
-"use client"
+"use client";
 import React from "react";
 
 const face = ["⊖_⊖", "⊜_⊜", "⊙_⊙"];
 
 export function LoadingScreen() {
   const [faceIndex, setFaceIndex] = React.useState(0);
- 
+
   useTimeout(() => {
     const newIndex = (faceIndex + 1) % face.length;
     setFaceIndex(newIndex);
@@ -30,5 +30,4 @@ function useTimeout(cb: () => void, ms: number) {
       clearTimeout(ref);
     };
   }, [cb, ms]);
-
 }

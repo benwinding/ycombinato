@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Story, StoryComment } from "./fetcher";
 import React from "react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { ExternalLink } from "./ExternalLink";
-dayjs.extend(relativeTime);
+import {
+  ExternalLink,
+  LinkToAuthor,
+  LinkToDiscussion,
+  LinkToDiscussionWrapper,
+} from "./ExternalLink";
 
 export const CommentResults = (props: {
   story: Story;
@@ -47,20 +49,26 @@ function DiscussionHeader({
   const discussionId = story.id;
   const submissionLink = story.url;
   const title = story.title;
-  const linkToDiscussion = `https://news.ycombinator.com/item?id=${discussionId}`;
   return (
     <div className="flex flex-col text-gray-700">
       <div className="flex flex-col tiny:flex-row gap-2 items-center justify-between">
         <ExternalLink href={submissionLink}>
           <h1 className="text flex items-center gap-2">{title}</h1>
         </ExternalLink>
-        <ExternalLink href={linkToDiscussion} className="text-xs flex-shrink-0">
+        <LinkToDiscussionWrapper
+          discussionId={story.id}
+          className="text-xs flex-shrink-0"
+        >
           (read on hn)
-        </ExternalLink>
+        </LinkToDiscussionWrapper>
       </div>
       <div className="text-xs">
-        {story.points} points by {story.author}{" "}
-        {getFromNowStr(story.created_at)} | {commentCount} comments
+        {story.points} points by <LinkToAuthor author={story.author} />{" "}
+        <LinkToDiscussion
+          discussionId={story.id}
+          createdAt={story.created_at}
+        />{" "}
+        | {commentCount} comments
       </div>
       <div className="border border-gray-300 p-2 rounded mt-2">
         {filterOptions}
@@ -157,16 +165,14 @@ function CommentHeader({
   expanderThread: React.ReactNode;
   expanderText: React.ReactNode;
 }) {
-  const linkToComment = `https://news.ycombinator.com/item?id=${comment.id}`;
-  const linkToUser = `https://news.ycombinator.com/user?id=${comment.author}`;
   return (
     <div className="flex items-center gap-2 text-gray-500 text-xs py-1">
-      <ExternalLink href={linkToUser} className="flex-shrink-0">
-        {comment.author}
-      </ExternalLink>
-      <ExternalLink href={linkToComment} className="line-clamp-1">
-        {getFromNowStr(comment.created_at)}
-      </ExternalLink>
+      <LinkToAuthor className="flex-shrink-0" author={comment.author} />
+      <LinkToDiscussion
+        className="line-clamp-1"
+        discussionId={comment.id}
+        createdAt={comment.created_at}
+      />
       <div className="flex-shrink-0">{expanderThread}</div>
       <div className="flex-grow"></div>
       <div className="flex-shrink-0 pr-2">{expanderText}</div>
@@ -240,8 +246,4 @@ function Expander({
     isCollapsed ? onExpand() : onCollapse();
   }, [isCollapsed, onCollapse, onExpand]);
   return <button onClick={onClickExpander}>[{expanderText}]</button>;
-}
-
-function getFromNowStr(input: string): string {
-  return dayjs(input).fromNow();
 }

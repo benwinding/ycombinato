@@ -1,8 +1,9 @@
 "use client";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./item/query_client";
-import { ExternalLink } from "./item/ExternalLink";
+import { LinkToAuthor } from "./item/ExternalLink";
 import Link from "next/link";
+import { LoadingScreen } from "@/components/loading_screen";
 
 type StoryFrontPage = {
   author: "kevincox";
@@ -38,11 +39,13 @@ function FrontPageViewer() {
   const query = useQuery("front-page", () => fetchHackerNewsFrontPage());
 
   if (query.isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
-  const data = query.data;
-  if (!data) {
-    return <div>Problem loading data...</div>;
+  if (query.status === "error") {
+    return <div>Problem loading data, err: {query.error + ""}</div>;
+  }
+  if (!query.data) {
+    return <div>No data?...</div>;
   }
 
   return (
@@ -61,7 +64,6 @@ function FrontPageItem({
   item: StoryFrontPage;
   index: number;
 }) {
-  const linkToUser = `https://news.ycombinator.com/user?id=${item.author}`;
   const linkToDiscussion = `/item?id=${item.objectID}`;
   return (
     <div className="flex flex-row items-start gap-1">
@@ -70,8 +72,7 @@ function FrontPageItem({
         <h2>{item.title}</h2>
         <div className="flex items-center text-gray-500 text-xs">
           <p>
-            {item.points} points by{" "}
-            <ExternalLink href={linkToUser}>{item.author}</ExternalLink>
+            {item.points} points by <LinkToAuthor author={item.author} />
           </p>
           <Link className="pl-1" href={linkToDiscussion}>
             ({item.num_comments} comments)

@@ -1,10 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
-import {
-  useUrlParams,
-  fetchHackerNewsPost,
-  Story,
-} from "./fetcher";
+import { useUrlParams, fetchHackerNewsPost, Story } from "./fetcher";
 import { QueryClientProvider, useQuery } from "react-query";
 import { queryClient } from "./query_client";
 import { sortChildren } from "./sorter";
@@ -69,7 +65,7 @@ const PostViewer = () => {
   );
   return (
     <div className="flex flex-col py-1 px-2">
-      {query.isLoading && query.isFetching && <LoadingScreen/>}
+      {query.isLoading && query.isFetching && <LoadingScreen />}
       {results}
     </div>
   );

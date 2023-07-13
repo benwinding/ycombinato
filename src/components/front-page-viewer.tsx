@@ -9,10 +9,15 @@ import {
 import { queryClient } from "@/api/query_client";
 import { FrontPageQuery, StoryItem, useHnPage } from "@/api/use-hn-page";
 
-export function FrontPageViewerWrapper(props: FrontPageQuery) {
+export function FrontPageViewerWrapper(
+  props: FrontPageQuery & { footer?: React.ReactNode }
+) {
   return (
     <QueryClientProvider client={queryClient}>
-      <FrontPageViewer {...props} />
+      <div className="flex flex-col w-full">
+        <FrontPageViewer {...props} />
+        {props.footer}
+      </div>
     </QueryClientProvider>
   );
 }
@@ -44,8 +49,8 @@ function FrontPageItem({ item, index }: { item: StoryItem; index: number }) {
       <span>{index}.</span>
       <div className="flex flex-col">
         <ExternalLink href={item.url}>{item.title}</ExternalLink>
-        <div className="flex items-center gap-1 text-gray-500 text-xs">
-          <p>{item.points} points by</p>
+        <div className="flex items-center flex-wrap gap-1 text-gray-500 text-xxs sm:text-xs">
+          <p className="flex-shrink-0">{item.points} points by</p>
           <LinkToAuthor author={item.author} />
           <ILinkToDiscussion
             discussionId={Number(item.objectID)}

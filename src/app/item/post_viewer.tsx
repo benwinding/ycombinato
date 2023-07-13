@@ -8,8 +8,8 @@ import { CommentResults } from "./comments";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { LoadingScreen } from "@/components/loading_screen";
 import { queryClient } from "@/api/query_client";
-import { useUrlParams } from "./useUrlParams";
 import { Story, useHnPost } from "@/api/use-hn-post";
+import { useSearchParams } from "next/navigation";
 
 export const PostViewerWrapper = () => {
   return (
@@ -24,8 +24,8 @@ const PostViewer = () => {
     Option.byResponseCount
   );
   const [textFilter, setTextFilter] = React.useState<string>("");
-  const params = useUrlParams();
-  const postId = params?.get("id");
+  const params = useSearchParams();
+  const postId = params.get("id");
   const query = useHnPost(postId + "");
 
   const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);

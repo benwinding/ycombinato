@@ -8,7 +8,7 @@ const Page = () => {
   React.useEffect(() => {
     setMounted(true);
   }, []);
-  const createdAfterI = getNowMinus(2, "hours");
+  const createdAfterI = getNowMinus(24, "hours");
   const createdBeforeI = getNow();
 
   const viewer = React.useMemo(
@@ -16,6 +16,8 @@ const Page = () => {
       mounted ? (
         <FrontPageViewerWrapper
           tag="show_hn"
+          page={0}
+          pageSize={10}
           createdAfterI={createdAfterI}
           createdBeforeI={createdBeforeI}
         />

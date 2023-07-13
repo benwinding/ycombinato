@@ -2,20 +2,23 @@
 import React from "react";
 import { getNowMinus, getNow } from "@/components/time";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
+import Link from "next/link";
 
 const Page = () => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
-  const createdAfterI = getNowMinus(1, "D");
+  const createdAfterI = getNowMinus(24, "hours");
   const createdBeforeI = getNow();
 
   const viewer = React.useMemo(
     () =>
       mounted ? (
         <FrontPageViewerWrapper
-          tag="show_hn"
+          tag="ask_hn"
+          page={0}
+          pageSize={10}
           createdAfterI={createdAfterI}
           createdBeforeI={createdBeforeI}
         />

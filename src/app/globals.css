@@ -5,3 +5,8 @@
 code {
   white-space: pre-line;
 }
+
+/* https://stackoverflow.com/a/65211073/2419584 */
+* {
+  -webkit-tap-highlight-color: rgba(235, 0, 0, 0.04);
+}

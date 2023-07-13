@@ -3,7 +3,7 @@ import { ArrowLongLeftIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { Fragment } from "react";
 
-const links = ["best", "top", "ask", "show"];
+const links = ["ask", "show"];
 
 export function Header() {
   return (

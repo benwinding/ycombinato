@@ -1,5 +1,7 @@
 "use client";
+import { HnPageFooter } from "@/components/HnPageFooter";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 const Page = () => {
@@ -7,16 +9,18 @@ const Page = () => {
   React.useEffect(() => {
     setMounted(true);
   }, []);
+  const params = useSearchParams();
   const viewer = React.useMemo(
     () =>
       mounted ? (
         <FrontPageViewerWrapper
           tag="front_page"
-          createdAfterI={168924730}
-          createdBeforeI={0}
+          page={Number(params?.get("page") || 0)}
+          pageSize={10}
+          footer={<HnPageFooter pageCount={10} />}
         />
       ) : null,
-    [mounted]
+    [mounted, params]
   );
 
   return (

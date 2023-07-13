@@ -7,11 +7,15 @@ export function getFromNowStr(input: string): string {
 }
 
 export function getNow() {
-  return toSeconds(dayjs());
+  return toSeconds(roundHour(dayjs()));
 }
 
 export function getNowMinus(value: number, unit: dayjs.ManipulateType) {
-  return toSeconds(dayjs().subtract(value, unit));
+  return toSeconds(roundHour(dayjs().subtract(value, unit)));
+}
+
+function roundHour(dayjs: dayjs.Dayjs) {
+  return dayjs.minute(0).second(0).millisecond(0);
 }
 
 function toSeconds(input: dayjs.Dayjs): number {

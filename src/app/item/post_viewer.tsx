@@ -10,6 +10,7 @@ import { LoadingScreen } from "@/components/loading_screen";
 import { queryClient } from "@/api/query_client";
 import { Story, useHnPost } from "@/api/use-hn-post";
 import { useSearchParams } from "next/navigation";
+import { RadioButton } from "@/components/RadioButton";
 
 export const PostViewerWrapper = () => {
   return (
@@ -200,21 +201,5 @@ function SortOptions(props: {
         />
       ))}
     </div>
-  );
-}
-
-type RadioButtonProps = {
-  label: string;
-  value: string;
-  checked: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-function RadioButton({ label, value, checked, onChange }: RadioButtonProps) {
-  return (
-    <label className="text-xs flex items-center gap-1">
-      <input type="radio" value={value} checked={checked} onChange={onChange} />
-      {label}
-    </label>
   );
 }

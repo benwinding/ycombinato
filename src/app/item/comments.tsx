@@ -46,7 +46,6 @@ function DiscussionHeader({
   commentCount: number;
   filterOptions: React.ReactNode;
 }) {
-  const discussionId = story.id;
   const submissionLink = story.url;
   const title = story.title;
   return (

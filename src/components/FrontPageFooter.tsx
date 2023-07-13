@@ -2,7 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
-export function HnPageFooter(props: { pageCount: number }) {
+export function FrontPageFooter(props: { pageCount: number }) {
   const pages = new Array(props.pageCount).fill(0).map((_, i) => i + 1);
   const router = useRouter();
   const pathname = usePathname();

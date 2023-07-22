@@ -3,7 +3,11 @@ import { ArrowLongLeftIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { Fragment } from "react";
 
-const links = ["ask", "show"];
+const links = [
+  {label: "front", link: "/"}, 
+  {label: "ask"}, 
+  {label: "show"}
+];
 
 export function Header() {
   return (
@@ -15,11 +19,11 @@ export function Header() {
       </MenuItem>
       <div className="flex justify-between flex-wrap w-full">
         <div className="flex items-center text-xs gap-2">
-          {links.map((link, index) => (
-            <Fragment key={link}>
+          {links.map(({label, link}, index) => (
+            <Fragment key={label}>
               {index !== 0 && "|"}
-              <MenuItem key={link} href={link}>
-                {link}
+              <MenuItem href={link || label}>
+                {label}
               </MenuItem>
             </Fragment>
           ))}

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 const links = [
-  {label: "front", link: "/"}, 
-  {label: "ask"}, 
-  {label: "show"}
+  { label: "front", link: "/" },
+  { label: "ask" },
+  { label: "show" },
 ];
 
 export function Header() {
@@ -19,12 +19,10 @@ export function Header() {
       </MenuItem>
       <div className="flex justify-between flex-wrap w-full">
         <div className="flex items-center text-xs gap-2">
-          {links.map(({label, link}, index) => (
+          {links.map(({ label, link }, index) => (
             <Fragment key={label}>
               {index !== 0 && "|"}
-              <MenuItem href={link || label}>
-                {label}
-              </MenuItem>
+              <MenuItem href={link || label}>{label}</MenuItem>
             </Fragment>
           ))}
         </div>

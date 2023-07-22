@@ -69,6 +69,7 @@ function DiscussionHeader({
         />{" "}
         | {commentCount} comments
       </div>
+      {story.text && <HTMLOutput className="text-xs pt-2" html={story.text} />}
       <div className="border border-gray-300 p-2 rounded mt-2">
         {filterOptions}
       </div>
@@ -133,10 +134,7 @@ function CommentCardContent(props: {
       <div id={id + ""}>
         {header}
         {!shouldCollapseText && (
-          <div
-            className="text-xs pr-2 comment-text"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
+          <HTMLOutput className="text-xs pr-2" html={html} />
         )}
       </div>
       {!isThreadCollapsed && (
@@ -152,6 +150,15 @@ function CommentCardContent(props: {
         </div>
       )}
     </ul>
+  );
+}
+
+function HTMLOutput(props: { html: string; className?: string }) {
+  return (
+    <div
+      className={props.className + " comment-text"}
+      dangerouslySetInnerHTML={{ __html: props.html }}
+    />
   );
 }
 

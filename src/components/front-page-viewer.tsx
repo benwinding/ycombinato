@@ -12,6 +12,7 @@ import { FrontPageFooter } from "./FrontPageFooter";
 import { LoadingScreen } from "./loading_screen";
 import { RadioButton } from "./RadioButton";
 import { useState } from "react";
+import { useSetUrlQueryParams } from "./usePageFromParams";
 
 export function FrontPageViewerWrapper(props: FrontPageQuery) {
   return (
@@ -25,6 +26,7 @@ function PageViewer(props: FrontPageQuery) {
   const query = useHnPage(props);
   const [sortValue, setSortValue] = useState(SortOption.byPoints);
   const sorted = useFrontPageSort(query.data, sortValue);
+  const { patchQueryParams } = useSetUrlQueryParams();
   if (query.isLoading) {
     return <LoadingScreen />;
   }
@@ -36,9 +38,28 @@ function PageViewer(props: FrontPageQuery) {
   }
   return (
     <div className="flex flex-col w-full">
+      <PerPageOptions
+        value={props.pageSize}
+        onChange={(perPage) => patchQueryParams({ perPage })}
+      />
       <SortOptions value={sortValue} onChange={setSortValue} />
       <FrontPageViewer data={sorted} />
       <FrontPageFooter pageCount={query.data.nbPages} />
+    </div>
+  );
+}
+
+function PerPageOptions(props: {
+  value: number;
+  onChange: (newPerPage: number) => void;
+}) {
+  return (
+    <div>
+      <select onChange={(e) => props.onChange(parseInt(e.target.value))}>
+        <option>30</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
     </div>
   );
 }

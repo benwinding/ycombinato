@@ -1,30 +1,27 @@
 "use client";
 import React from "react";
-import { getNowMinus, getNow } from "@/components/time";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
-import { usePageFromParams } from "@/components/usePageFromParams";
+import { useHnQueryUrlParams } from "@/components/usePageFromParams";
 
 const Page = () => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
-  const createdAfterI = getNowMinus(24, "hours");
-  const createdBeforeI = getNow();
-  const page = usePageFromParams();
+  const params = useHnQueryUrlParams();
 
   const viewer = React.useMemo(
     () =>
       mounted ? (
         <FrontPageViewerWrapper
           tag="ask_hn"
-          page={page}
-          pageSize={30}
-          createdAfterI={createdAfterI}
-          createdBeforeI={createdBeforeI}
+          page={params.page}
+          pageSize={params.perPage}
+          createdAfterI={params.createdAfterI}
+          createdBeforeI={params.createdBeforeI}
         />
       ) : null,
-    [createdAfterI, createdBeforeI, mounted, page]
+    [mounted, params]
   );
 
   return (

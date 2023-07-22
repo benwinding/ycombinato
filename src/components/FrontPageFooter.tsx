@@ -1,15 +1,10 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import { useSetUrlQueryParams } from "./usePageFromParams";
 
 export function FrontPageFooter(props: { pageCount: number }) {
   const pages = new Array(props.pageCount).fill(0).map((_, i) => i + 1);
-  const router = useRouter();
-  const pathname = usePathname();
-
-  function onClick(page: number) {
-    router.push(pathname + `?page=${page}`);
-  }
+  const { patchQueryParams } = useSetUrlQueryParams();
 
   return (
     <div className="flex gap-2 pt-4 justify-center w-full flex-wrap">
@@ -17,7 +12,7 @@ export function FrontPageFooter(props: { pageCount: number }) {
         <span
           key={page}
           className="cursor-pointer hover:underline"
-          onClick={() => onClick(page)}
+          onClick={() => patchQueryParams({ page })}
         >
           {page}
         </span>

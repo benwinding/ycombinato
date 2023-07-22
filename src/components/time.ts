@@ -21,3 +21,7 @@ function roundHour(dayjs: dayjs.Dayjs) {
 function toSeconds(input: dayjs.Dayjs): number {
   return Math.round(Number(input.toDate()) / 1000);
 }
+
+export function dateToHnSeconds(input: Date): number {
+  return toSeconds(roundHour(dayjs(input)));
+}

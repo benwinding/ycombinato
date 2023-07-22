@@ -13,6 +13,7 @@ import { LoadingScreen } from "./loading_screen";
 import { RadioButton } from "./RadioButton";
 import { useState } from "react";
 import { useSetUrlQueryParams } from "./usePageFromParams";
+import { dateToHnSeconds } from "./time";
 
 export function FrontPageViewerWrapper(props: FrontPageQuery) {
   return (
@@ -38,13 +39,20 @@ function PageViewer(props: FrontPageQuery) {
   }
   return (
     <div className="flex flex-col w-full">
+      <SortOptions value={sortValue} onChange={setSortValue} />
+      <FrontPageViewer data={sorted} />
+      <FrontPageFooter pageCount={query.data.nbPages} />
       <PerPageOptions
         value={props.pageSize}
         onChange={(perPage) => patchQueryParams({ perPage })}
       />
-      <SortOptions value={sortValue} onChange={setSortValue} />
-      <FrontPageViewer data={sorted} />
-      <FrontPageFooter pageCount={query.data.nbPages} />
+      {props.tag !== "front_page" && (
+        <DateSelect
+          label="Date"
+          value={props.createdBeforeI}
+          onChange={(newTime) => patchQueryParams({ createdBeforeI: newTime })}
+        />
+      )}
     </div>
   );
 }
@@ -55,11 +63,36 @@ function PerPageOptions(props: {
 }) {
   return (
     <div>
-      <select onChange={(e) => props.onChange(parseInt(e.target.value))}>
+      <label>Per page</label>
+      <select
+        value={props.value}
+        className="border border-gray-300 p-1"
+        onChange={(e) => props.onChange(parseInt(e.target.value))}
+      >
         <option>30</option>
         <option>50</option>
         <option>100</option>
       </select>
+    </div>
+  );
+}
+
+function DateSelect(props: {
+  value: number;
+  label: string;
+  onChange: (newTime: number) => void;
+}) {
+  const onInput = (date: string) => {
+    props.onChange(dateToHnSeconds(new Date(date)));
+  };
+  return (
+    <div>
+      <label>{props.label}</label>
+      <input
+        type="date"
+        value={props.value}
+        onChange={(e) => onInput(e.target.value)}
+      />
     </div>
   );
 }

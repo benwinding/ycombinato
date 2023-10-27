@@ -108,6 +108,7 @@ const CommentCard = (props: {
       header={
         <CommentHeader
           comment={comment}
+          maps={maps}
           expanderThread={<Expander {...expanderThread} />}
           expanderText={<Expander {...expanderText} />}
         />
@@ -172,13 +173,19 @@ function HTMLOutput(props: { html: string; className?: string }) {
 
 function CommentHeader({
   comment,
+  maps,
   expanderThread,
   expanderText,
 }: {
   comment: StoryComment;
+  maps: CommentIdMaps;
   expanderThread: React.ReactNode;
   expanderText: React.ReactNode;
 }) {
+  const rootId = maps.idRootMap.get(comment.id);
+  const prevId = maps.idPrevMap.get(comment.id);
+  const nextId = maps.idNextMap.get(comment.id);
+  const parentId = maps.idParentMap.get(comment.id);
   return (
     <div className="flex items-center gap-2 text-gray-500 text-xs py-1">
       <LinkToAuthor className="flex-shrink-0" author={comment.author} />
@@ -189,6 +196,10 @@ function CommentHeader({
       />
       <div className="flex-shrink-0">{expanderThread}</div>
       <div className="flex-grow"></div>
+      {rootId && <a href={"#" + rootId}>root</a>}
+      {parentId && <a href={"#" + parentId}>parent</a>}
+      {prevId && <a href={"#" + prevId}>prev</a>}
+      {nextId && <a href={"#" + nextId}>next</a>}
       <div className="flex-shrink-0 pr-2">{expanderText}</div>
     </div>
   );

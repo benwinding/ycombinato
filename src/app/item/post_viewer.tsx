@@ -120,23 +120,25 @@ function getCommentCount<T extends HasChildren>(
     currentRootId: number | undefined
   ): number => {
     let childrenCount = 0;
+    const isRoot = currentRootId === undefined;
     parent.children.forEach((child, childIndex) => {
-      const rootId = currentRootId === undefined ? child.id : currentRootId;
       {
         // Counting totals
         totalComments++;
+        const rootId = isRoot ? child.id : currentRootId;
         const childCount = 1 + getChildrenRecursively(child, rootId);
         childrenCount += childCount;
         idTotalMap.set(child.id, childCount);
       }
       {
         // Determining parent id
-        idParentMap.set(child.id, parent.id);
+        !isRoot && idParentMap.set(child.id, parent.id);
       }
       {
         // Determining root id
-        idRootMap.set(child.id, rootId);
+        currentRootId != null && idRootMap.set(child.id, currentRootId);
       }
+      // TODO these depend on sorting order
       {
         // Determining next sibling id
         const next = parent.children[childIndex + 1];

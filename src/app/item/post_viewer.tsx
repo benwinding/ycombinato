@@ -85,6 +85,10 @@ function FilterResultsCount(props: {
 type CommentCountResults = {
   totalComments: number;
   idTotalMap: Map<number, number>;
+  idRootMap: Map<number, number>;
+  idParentMap: Map<number, number>;
+  idNextMap: Map<number, number>;
+  idPrevMap: Map<number, number>;
 };
 
 type HasChildren = {
@@ -97,26 +101,63 @@ function getCommentCount<T extends HasChildren>(
 ): CommentCountResults {
   let totalComments = 0;
   const idTotalMap = new Map<number, number>();
+  const idRootMap = new Map<number, number>();
+  const idParentMap = new Map<number, number>();
+  const idNextMap = new Map<number, number>();
+  const idPrevMap = new Map<number, number>();
   if (!data) {
     return {
       totalComments,
       idTotalMap,
+      idRootMap,
+      idParentMap,
+      idNextMap,
+      idPrevMap,
     };
   }
-  const getChildrenCountRecursively = (parent: HasChildren): number => {
+  const getChildrenRecursively = (
+    parent: HasChildren,
+    currentRootId: number | undefined
+  ): number => {
     let childrenCount = 0;
-    parent.children.forEach((child) => {
-      totalComments++;
-      const childCount = 1 + getChildrenCountRecursively(child);
-      childrenCount += childCount;
-      idTotalMap.set(child.id, childCount);
+    parent.children.forEach((child, childIndex) => {
+      const rootId = currentRootId === undefined ? child.id : currentRootId;
+      {
+        // Counting totals
+        totalComments++;
+        const childCount = 1 + getChildrenRecursively(child, rootId);
+        childrenCount += childCount;
+        idTotalMap.set(child.id, childCount);
+      }
+      {
+        // Determining parent id
+        idParentMap.set(child.id, parent.id);
+      }
+      {
+        // Determining root id
+        idRootMap.set(child.id, rootId);
+      }
+      {
+        // Determining next sibling id
+        const next = parent.children[childIndex + 1];
+        next != null && idNextMap.set(child.id, next.id);
+      }
+      {
+        // Determining prev sibling id
+        const prev = parent.children[childIndex - 1];
+        prev != null && idPrevMap.set(child.id, prev.id);
+      }
     });
     return childrenCount;
   };
-  getChildrenCountRecursively(data);
+  getChildrenRecursively(data, undefined);
   return {
     totalComments,
     idTotalMap,
+    idRootMap,
+    idParentMap,
+    idNextMap,
+    idPrevMap,
   };
 }
 
@@ -135,6 +176,10 @@ const useResults = (
           commentCount={commentCount.totalComments}
           maps={{
             idTotalMap: commentCount.idTotalMap,
+            idRootMap: commentCount.idRootMap,
+            idParentMap: commentCount.idParentMap,
+            idNextMap: commentCount.idNextMap,
+            idPrevMap: commentCount.idPrevMap,
           }}
           filterOptions={filterOptions}
         />

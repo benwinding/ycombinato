@@ -8,8 +8,12 @@ import {
 } from "@/components/ExternalLink";
 import { Story, StoryComment } from "@/api/use-hn-post";
 
-export type CommentIdMaps = {
+type CommentIdMaps = {
   idTotalMap: Map<number, number>;
+  idRootMap: Map<number, number>;
+  idParentMap: Map<number, number>;
+  idNextMap: Map<number, number>;
+  idPrevMap: Map<number, number>;
 };
 
 export const CommentResults = (props: {

@@ -133,7 +133,9 @@ const useResults = (
           story={data}
           filterText={filterText}
           commentCount={commentCount.totalComments}
-          idTotalMap={commentCount.idTotalMap}
+          maps={{
+            idTotalMap: commentCount.idTotalMap,
+          }}
           filterOptions={filterOptions}
         />
       ),

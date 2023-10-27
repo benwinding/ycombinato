@@ -8,11 +8,15 @@ import {
 } from "@/components/ExternalLink";
 import { Story, StoryComment } from "@/api/use-hn-post";
 
+export type CommentIdMaps = {
+  idTotalMap: Map<number, number>;
+};
+
 export const CommentResults = (props: {
   story: Story;
   filterText: string;
   commentCount: number;
-  idTotalMap: Map<number, number>;
+  maps: CommentIdMaps;
   filterOptions: React.ReactNode;
 }) => {
   const comments = props.story.children;
@@ -28,7 +32,7 @@ export const CommentResults = (props: {
           <CommentCard
             key={child.id}
             comment={child}
-            idTotalMap={props.idTotalMap}
+            maps={props.maps}
             filterText={props.filterText}
           />
         ))}
@@ -79,12 +83,12 @@ function DiscussionHeader({
 
 const CommentCard = (props: {
   comment: StoryComment;
-  idTotalMap: Map<number, number>;
+  maps: CommentIdMaps;
   filterText: string;
 }) => {
-  const { comment, filterText, idTotalMap } = props;
+  const { comment, filterText, maps } = props;
   const html = comment._textMarked || comment.text || "<i>[deleted]<i/>";
-  const commentChildrenCount = idTotalMap.get(comment.id) || 0;
+  const commentChildrenCount = maps.idTotalMap.get(comment.id) || 0;
 
   const expanderText = useTextCollapse(comment._textMarked, filterText);
   const expanderThread = useThreadCollapse(filterText, commentChildrenCount);
@@ -94,7 +98,7 @@ const CommentCard = (props: {
       id={comment.id}
       html={html}
       comments={comment.children}
-      idTotalMap={idTotalMap}
+      maps={maps}
       isTextCollapsed={expanderText.isCollapsed}
       isThreadCollapsed={expanderThread.isCollapsed}
       header={
@@ -112,7 +116,7 @@ const CommentCard = (props: {
 function CommentCardContent(props: {
   id: number;
   comments: StoryComment[];
-  idTotalMap: Map<number, number>;
+  maps: CommentIdMaps;
   header: React.ReactElement;
   isTextCollapsed: boolean;
   isThreadCollapsed: boolean;
@@ -143,7 +147,7 @@ function CommentCardContent(props: {
             <CommentCard
               key={child.id}
               comment={child}
-              idTotalMap={props.idTotalMap}
+              maps={props.maps}
               filterText={filterText}
             />
           ))}

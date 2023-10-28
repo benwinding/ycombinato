@@ -218,6 +218,12 @@ function CommentHeader({
   const prevId = maps.idPrevMap.get(comment.id);
   const nextId = maps.idNextMap.get(comment.id);
   const parentId = maps.idParentMap.get(comment.id);
+  const internalLinks = [
+    { link: rootId, label: "root" },
+    { link: parentId, label: "parent" },
+    { link: prevId, label: "prev" },
+    { link: nextId, label: "next" },
+  ].filter(({ link }) => link != null);
   return (
     <div className="flex items-center gap-2 text-gray-500 text-xs py-1">
       <LinkToAuthor className="flex-shrink-0" author={comment.author} />
@@ -228,10 +234,16 @@ function CommentHeader({
       />
       <div className="flex-shrink-0">{expanderThread}</div>
       <div className="flex-grow"></div>
-      {rootId && <a href={"#" + rootId}>root</a>}
-      {parentId && <a href={"#" + parentId}>parent</a>}
-      {prevId && <a href={"#" + prevId}>prev</a>}
-      {nextId && <a href={"#" + nextId}>next</a>}
+      <div className="flex justify-end flex-wrap gap-0">
+        {internalLinks.map(({ link, label }, i) => (
+          <>
+            <a key={link} href={"#" + link}>
+              {label}
+            </a>
+            {i < internalLinks.length - 1 && <Bar key={label} />}
+          </>
+        ))}
+      </div>
       <div className="flex-shrink-0 pr-2">{expanderText}</div>
     </div>
   );

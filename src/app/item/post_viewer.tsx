@@ -31,7 +31,9 @@ const PostViewer = () => {
 
   const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);
   const data = query.data;
-  const dataSorted = useDataSort(data, sortOption);
+  const idNextMap = new Map<number, number>();
+  const idPrevMap = new Map<number, number>();
+  const dataSorted = useDataSort(data, sortOption, idNextMap, idPrevMap);
   const commentCountResult = React.useMemo(() => getCommentCount(data), [data]);
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
   const markCount = dataFiltered?.markCount;
@@ -57,7 +59,11 @@ const PostViewer = () => {
   const results = useResults(
     dataFiltered?.data,
     textFilterDebounced,
-    commentCountResult,
+    {
+      ...commentCountResult,
+      idNextMap,
+      idPrevMap,
+    },
     filterOptions
   );
   return (
@@ -87,8 +93,6 @@ type CommentCountResults = {
   idTotalMap: Map<number, number>;
   idRootMap: Map<number, number>;
   idParentMap: Map<number, number>;
-  idNextMap: Map<number, number>;
-  idPrevMap: Map<number, number>;
 };
 
 type HasChildren = {
@@ -103,16 +107,12 @@ function getCommentCount<T extends HasChildren>(
   const idTotalMap = new Map<number, number>();
   const idRootMap = new Map<number, number>();
   const idParentMap = new Map<number, number>();
-  const idNextMap = new Map<number, number>();
-  const idPrevMap = new Map<number, number>();
   if (!data) {
     return {
       totalComments,
       idTotalMap,
       idRootMap,
       idParentMap,
-      idNextMap,
-      idPrevMap,
     };
   }
   const getChildrenRecursively = (
@@ -138,17 +138,6 @@ function getCommentCount<T extends HasChildren>(
         // Determining root id
         currentRootId != null && idRootMap.set(child.id, currentRootId);
       }
-      // TODO these depend on sorting order
-      {
-        // Determining next sibling id
-        const next = parent.children[childIndex + 1];
-        next != null && idNextMap.set(child.id, next.id);
-      }
-      {
-        // Determining prev sibling id
-        const prev = parent.children[childIndex - 1];
-        prev != null && idPrevMap.set(child.id, prev.id);
-      }
     });
     return childrenCount;
   };
@@ -158,15 +147,16 @@ function getCommentCount<T extends HasChildren>(
     idTotalMap,
     idRootMap,
     idParentMap,
-    idNextMap,
-    idPrevMap,
   };
 }
 
 const useResults = (
   data: Story | undefined,
   filterText: string,
-  commentCount: CommentCountResults,
+  commentCount: CommentCountResults & {
+    idNextMap: Map<number, number>;
+    idPrevMap: Map<number, number>;
+  },
   filterOptions: React.ReactNode
 ) => {
   const results = useMemo(
@@ -191,17 +181,23 @@ const useResults = (
   return results;
 };
 
-const useDataSort = (data: Story | undefined, sortOption: Option) => {
-  const dataSorted = useMemo(
-    () =>
-      data
-        ? sortChildren(data, {
-            byResponseCount: sortOption === Option.byResponseCount,
-            byThreadDepth: sortOption === Option.byThreadDepth,
-          })
-        : undefined,
-    [data, sortOption]
-  );
+const useDataSort = (
+  data: Story | undefined,
+  sortOption: Option,
+  idNextMap: Map<number, number>,
+  idPrevMap: Map<number, number>
+) => {
+  const dataSorted = useMemo(() => {
+    if (!data) {
+      return undefined;
+    }
+    return sortChildren(data, {
+      byResponseCount: sortOption === Option.byResponseCount,
+      byThreadDepth: sortOption === Option.byThreadDepth,
+      onNextFound: (child, next) => idNextMap.set(child.id, next.id),
+      onPrevFound: (child, prev) => idPrevMap.set(child.id, prev.id),
+    });
+  }, [data, idNextMap, idPrevMap, sortOption]);
   return dataSorted;
 };
 

@@ -6,14 +6,16 @@ function superNaiveDeepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-type SortChildrenOpts = {
+type SortChildrenOpts<T> = {
   byThreadDepth: boolean;
   byResponseCount: boolean;
+  onNextFound?: (child: T, next: T) => void;
+  onPrevFound?: (child: T, prev: T) => void;
 };
 
 export function sortChildren<T extends HasChildren>(
   story: T,
-  opts: SortChildrenOpts
+  opts: SortChildrenOpts<T>
 ): T {
   if (!story) {
     return story;
@@ -24,7 +26,17 @@ export function sortChildren<T extends HasChildren>(
     sortFn: CommentSortFunction
   ): HasChildren[] => {
     node.children.sort(sortFn);
-    node.children.forEach((child) => {
+    node.children.forEach((child, childIndex) => {
+      {
+        // Determining next sibling id
+        const next = node.children[childIndex + 1];
+        next != null && opts.onNextFound?.(child as T, next as T);
+      }
+      {
+        // Determining prev sibling id
+        const prev = node.children[childIndex - 1];
+        prev != null && opts.onPrevFound?.(child as T, prev as T);
+      }
       recursiveSort(child, sortFn);
     });
     return node.children;
@@ -36,7 +48,7 @@ export function sortChildren<T extends HasChildren>(
   return storySorted;
 }
 
-function getSortFunction(opts: SortChildrenOpts): CommentSortFunction {
+function getSortFunction<T>(opts: SortChildrenOpts<T>): CommentSortFunction {
   if (opts.byThreadDepth) {
     return sortbyThreadDepthFn;
   }

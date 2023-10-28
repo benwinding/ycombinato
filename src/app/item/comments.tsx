@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import React from "react";
 import {
   ExternalLink,
@@ -236,12 +236,12 @@ function CommentHeader({
       <div className="flex-grow"></div>
       <div className="flex justify-end flex-wrap gap-0">
         {internalLinks.map(({ link, label }, i) => (
-          <>
-            <a key={link} href={"#" + link}>
+          <Fragment key={i}>
+            <a href={"#" + link}>
               {label}
             </a>
-            {i < internalLinks.length - 1 && <Bar key={label} />}
-          </>
+            {i < internalLinks.length - 1 && <Bar/>}
+          </Fragment>
         ))}
       </div>
       <div className="flex-shrink-0 pr-2">{expanderText}</div>

@@ -20,7 +20,6 @@ export type FrontPageQuery =
 
 export function useHnPage(query: FrontPageQuery) {
   const queryKey = getQueryKey(query);
-  console.log("queryKey", queryKey);
   const queryRes = useQuery(queryKey, () => fetchHackerNewsFrontPage(query));
   return queryRes;
 }

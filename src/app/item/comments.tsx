@@ -7,6 +7,7 @@ import {
   LinkToDiscussionWrapper,
 } from "@/components/ExternalLink";
 import { Story, StoryComment } from "@/api/use-hn-post";
+import { ILinkToDiscussionWrapper } from "@/components/InternalLink";
 
 type CommentIdMaps = {
   idTotalMap: Map<number, number>;
@@ -54,28 +55,51 @@ function DiscussionHeader({
   commentCount: number;
   filterOptions: React.ReactNode;
 }) {
-  const submissionLink = story.url;
   const title = story.title;
+  const readOnHnLink = (
+    <LinkToDiscussionWrapper
+      discussionId={story.id}
+      className="text-xs flex-shrink-0"
+    >
+      (read on hn)
+    </LinkToDiscussionWrapper>
+  );
+  const parentLink = story.parent_id != null && (
+    <ILinkToDiscussionWrapper discussionId={story.parent_id}>
+      parent comment
+    </ILinkToDiscussionWrapper>
+  );
+  const submissionLink = title && (
+    <ExternalLink href={story.url}>
+      <h1 className="text flex items-center gap-2">{title}</h1>
+    </ExternalLink>
+  );
   return (
     <div className="flex flex-col text-gray-700">
-      <div className="flex flex-col tiny:flex-row gap-2 items-center justify-between">
-        <ExternalLink href={submissionLink}>
-          <h1 className="text flex items-center gap-2">{title}</h1>
-        </ExternalLink>
-        <LinkToDiscussionWrapper
-          discussionId={story.id}
-          className="text-xs flex-shrink-0"
-        >
-          (read on hn)
-        </LinkToDiscussionWrapper>
-      </div>
-      <div className="text-xs">
-        {story.points} points by <LinkToAuthor author={story.author} />{" "}
-        <LinkToDiscussion
-          discussionId={story.id}
-          createdAt={story.created_at}
-        />{" "}
-        | {commentCount} comments
+      {submissionLink && (
+        <div className="flex flex-col tiny:flex-row gap-2 items-center justify-between">
+          {submissionLink}
+          {readOnHnLink}
+        </div>
+      )}
+      <div className="text-xs flex justify-between">
+        <div>
+          {story.points} points by <LinkToAuthor author={story.author} />
+          <Space />
+          <LinkToDiscussion
+            discussionId={story.id}
+            createdAt={story.created_at}
+          />
+          <Bar />
+          {commentCount} comments
+        </div>
+        {parentLink && (
+          <div>
+            {parentLink}
+            <Bar />
+            {readOnHnLink}
+          </div>
+        )}
       </div>
       {story.text && <HTMLOutput className="text-xs pt-2" html={story.text} />}
       <div className="border border-gray-300 p-2 rounded mt-2">
@@ -83,6 +107,14 @@ function DiscussionHeader({
       </div>
     </div>
   );
+}
+
+function Bar() {
+  return <span className="px-1">|</span>;
+}
+
+function Space() {
+  return <span className="px-1"></span>;
 }
 
 const CommentCard = (props: {

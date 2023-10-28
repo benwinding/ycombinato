@@ -1,13 +1,11 @@
 "use client";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
+import { useIsMounted } from "@/components/useIsMounted";
 import { usePageFromParams } from "@/components/usePageFromParams";
 import React from "react";
 
 const Page = () => {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsMounted();
   const page = usePageFromParams();
   const viewer = React.useMemo(
     () =>

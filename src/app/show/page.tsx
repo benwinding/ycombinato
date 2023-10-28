@@ -2,12 +2,10 @@
 import React from "react";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
 import { useHnQueryUrlParams } from "@/components/usePageFromParams";
+import { useIsMounted } from "@/components/useIsMounted";
 
 const Page = () => {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsMounted();
   const params = useHnQueryUrlParams();
 
   const viewer = React.useMemo(

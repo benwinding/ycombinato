@@ -12,7 +12,7 @@ export function LoadingScreen() {
   }, 2000 * Math.random());
 
   return (
-    <div className="flex flex-col items-center py-40">
+    <div className="flex flex-col items-center py-40 w-full">
       <p className="text-3xl font-mono text-gray-600 pb-10">Loading...</p>
       <p className="text-4xl font-mono whitespace-pre text-gray-400">
         {face[faceIndex]}

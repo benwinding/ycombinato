@@ -16,19 +16,24 @@ type HnQueryUrlParams = {
 
 export function useHnQueryUrlParams(): HnQueryUrlParams {
   const params = useSearchParams();
+
+  function getParam(key: keyof HnQueryUrlParams) {
+    return params?.get(key);
+  }
+
   const defaults: HnQueryUrlParams = {
     page: 1,
     perPage: 30,
     createdBeforeI: getNow(),
     createdAfterI: getNowMinus(24, "hours"),
   };
-  const page = Number(params?.get("page") || defaults.page);
-  const perPage = Number(params?.get("perPage") || defaults.perPage);
+  const page = Number(getParam("page") || defaults.page);
+  const perPage = Number(getParam("perPage") || defaults.perPage);
   const createdAfterI = Number(
-    params?.get("afterTime") || defaults.createdAfterI
+    getParam("createdAfterI") || defaults.createdAfterI
   );
   const createdBeforeI = Number(
-    params?.get("beforeTime") || defaults.createdBeforeI
+    getParam("createdBeforeI") || defaults.createdBeforeI
   );
   return {
     page,

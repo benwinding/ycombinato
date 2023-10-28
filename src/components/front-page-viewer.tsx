@@ -11,9 +11,14 @@ import { FrontPageViewer } from "./FrontPageViewer";
 import { FrontPageFooter } from "./FrontPageFooter";
 import { LoadingScreen } from "./loading_screen";
 import { RadioButton } from "./RadioButton";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useSetUrlQueryParams } from "./usePageFromParams";
-import { dateToHnSeconds } from "./time";
+import {
+  dateToHnSeconds,
+  minus24Hours,
+  secondsToDateString,
+  todayDateString,
+} from "./time";
 
 export function FrontPageViewerWrapper(props: FrontPageQuery) {
   return (
@@ -42,18 +47,45 @@ function PageViewer(props: FrontPageQuery) {
       <SortOptions value={sortValue} onChange={setSortValue} />
       <FrontPageViewer data={sorted} />
       <FrontPageFooter pageCount={query.data.nbPages} />
-      <PerPageOptions
-        value={props.pageSize}
-        onChange={(perPage) => patchQueryParams({ perPage })}
-      />
-      {props.tag !== "front_page" && (
-        <DateSelect
-          label="Date"
-          value={props.createdBeforeI}
-          onChange={(newTime) => patchQueryParams({ createdBeforeI: newTime })}
-        />
-      )}
+      <table>
+        <tbody>
+          <OptionRow
+            label="Per page"
+            option={
+              <PerPageOptions
+                value={props.pageSize}
+                onChange={(perPage) => patchQueryParams({ perPage })}
+              />
+            }
+          />
+          {props.tag !== "front_page" && (
+            <OptionRow
+              label="Date"
+              option={
+                <DateSelect
+                  valueDateString={secondsToDateString(props.createdBeforeI)}
+                  onChange={(newTime) =>
+                    patchQueryParams({
+                      createdBeforeI: newTime,
+                      createdAfterI: minus24Hours(newTime),
+                    })
+                  }
+                />
+              }
+            />
+          )}
+        </tbody>
+      </table>
     </div>
+  );
+}
+
+function OptionRow(props: { label: string; option: React.ReactNode }) {
+  return (
+    <tr className="py-1">
+      <td className="pr-2 w-24">{props.label}</td>
+      <td className="">{props.option}</td>
+    </tr>
   );
 }
 
@@ -62,38 +94,32 @@ function PerPageOptions(props: {
   onChange: (newPerPage: number) => void;
 }) {
   return (
-    <div>
-      <label>Per page</label>
-      <select
-        value={props.value}
-        className="border border-gray-300 p-1"
-        onChange={(e) => props.onChange(parseInt(e.target.value))}
-      >
-        <option>30</option>
-        <option>50</option>
-        <option>100</option>
-      </select>
-    </div>
+    <select
+      value={props.value}
+      className="border border-gray-300 p-1"
+      onChange={(e) => props.onChange(parseInt(e.target.value))}
+    >
+      <option>50</option>
+      <option>100</option>
+    </select>
   );
 }
 
+const today = todayDateString();
+
 function DateSelect(props: {
-  value: number;
-  label: string;
-  onChange: (newTime: number) => void;
+  valueDateString: string;
+  onChange: (newTimeSeconds: number) => void;
 }) {
   const onInput = (date: string) => {
     props.onChange(dateToHnSeconds(new Date(date)));
   };
   return (
-    <div>
-      <label>{props.label}</label>
-      <input
-        type="date"
-        value={props.value}
-        onChange={(e) => onInput(e.target.value)}
-      />
-    </div>
+    <input
+      type="date"
+      value={props.valueDateString || today}
+      onChange={(e) => onInput(e.target.value)}
+    />
   );
 }
 

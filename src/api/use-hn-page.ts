@@ -2,6 +2,7 @@
 import { useQuery } from "react-query";
 
 type ApiFrontTag = "front_page";
+// TODO need to use "search_by_date" output
 type ApiOtherTags = "show_hn" | "ask_hn";
 
 export type FrontPageQuery =
@@ -62,6 +63,7 @@ function getQueryUrl(args: FrontPageQuery): string {
   b.addPageSize(args.pageSize);
   b.addPage(args.page - 1);
   if (args.tag !== "front_page") {
+    b.setPath("search_by_date");
     b.addCreatedBeforeAfter({
       before: args.createdBeforeI,
       after: args.createdAfterI,
@@ -71,29 +73,37 @@ function getQueryUrl(args: FrontPageQuery): string {
 }
 
 class QueryBuilder {
-  private url = "https://hn.algolia.com/api/v1/search?";
+  private queryString: string = "";
+  private baseUrl = "https://hn.algolia.com/api/v1/";
+  private path = "search";
+
+  setPath(path: string) {
+    this.path = path;
+    return this;
+  }
 
   addTag(tag: ApiFrontTag | ApiOtherTags) {
-    this.url += `tags=${tag}&`;
+    this.queryString += `tags=${tag}&`;
     return this;
   }
 
   addCreatedBeforeAfter(args: { after: number; before: number }) {
-    this.url += `numericFilters=created_at_i>${args.after},created_at_i<${args.before}&`;
+    this.queryString += `numericFilters=created_at_i>${args.after},created_at_i<${args.before}&`;
     return this;
   }
 
   addPage(page: number) {
-    this.url += `page=${page}&`;
+    this.queryString += `page=${page}&`;
     return this;
   }
 
   addPageSize(pageSize: number) {
-    this.url += `hitsPerPage=${pageSize}&`;
+    this.queryString += `hitsPerPage=${pageSize}&`;
     return this;
   }
 
   build() {
-    return this.url;
+    const url = `${this.baseUrl}${this.path}?${this.queryString}`;
+    return url;
   }
 }

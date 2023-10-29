@@ -13,9 +13,19 @@ code {
 
 .comment-text {
   overflow-wrap: break-word;
+  padding-bottom: 0.2rem;
 }
 
 .comment-text p {
   padding-bottom: 0.3rem;
   padding-right: 0.5rem;
+}
+
+.comment-text a {
+  text-decoration: underline;
+}
+
+.comment-text pre {
+  padding-left: 0.5rem;
+  padding-bottom: 0.3rem;
 }

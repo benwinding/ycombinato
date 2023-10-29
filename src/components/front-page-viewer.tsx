@@ -14,7 +14,9 @@ import { RadioButton } from "./RadioButton";
 import React, { useState } from "react";
 import { useSetUrlQueryParams } from "./usePageFromParams";
 import {
+  add24Hours,
   dateToHnSeconds,
+  getNowMinus,
   minus24Hours,
   secondsToDateString,
   todayDateString,
@@ -42,8 +44,30 @@ function PageViewer(props: FrontPageQuery) {
   if (!query.data || !sorted) {
     return <div>No data?...</div>;
   }
+  const isNotFrontPage = props.tag !== "front_page";
+  const dateButtons = isNotFrontPage && (
+    <DateButtons
+      createdBeforeI={props.createdBeforeI}
+      onClickYesterday={() => {
+        const newBefore = minus24Hours(props.createdBeforeI);
+        patchQueryParams({
+          createdAfterI: minus24Hours(newBefore),
+          createdBeforeI: newBefore,
+          page: 1,
+        });
+      }}
+      onClickTomorrow={() => {
+        patchQueryParams({
+          createdAfterI: props.createdBeforeI,
+          createdBeforeI: add24Hours(props.createdBeforeI),
+          page: 1,
+        });
+      }}
+    />
+  );
   return (
     <div className="flex flex-col w-full">
+      <div className="pb-3">{dateButtons}</div>
       <SortOptions value={sortValue} onChange={setSortValue} />
       <FrontPageViewer data={sorted} />
       <FrontPageFooter pageCount={query.data.nbPages} />
@@ -58,7 +82,7 @@ function PageViewer(props: FrontPageQuery) {
               />
             }
           />
-          {props.tag !== "front_page" && (
+          {isNotFrontPage && (
             <OptionRow
               label="Date"
               option={
@@ -66,14 +90,16 @@ function PageViewer(props: FrontPageQuery) {
                   valueDateString={secondsToDateString(props.createdBeforeI)}
                   onChange={(newTime) =>
                     patchQueryParams({
-                      createdBeforeI: newTime,
                       createdAfterI: minus24Hours(newTime),
+                      createdBeforeI: newTime,
+                      page: 1,
                     })
                   }
                 />
               }
             />
           )}
+          {isNotFrontPage && <OptionRow label="" option={dateButtons} />}
         </tbody>
       </table>
     </div>
@@ -120,6 +146,29 @@ function DateSelect(props: {
       value={props.valueDateString || today}
       onChange={(e) => onInput(e.target.value)}
     />
+  );
+}
+
+function DateButtons(props: {
+  createdBeforeI: number;
+  onClickTomorrow: () => void;
+  onClickYesterday: () => void;
+}) {
+  const hasTomorrow = React.useMemo(() => {
+    const dayBeforeToday = getNowMinus(1, "day");
+    const hasTomorrow = props.createdBeforeI < dayBeforeToday;
+    return hasTomorrow;
+  }, [props.createdBeforeI]);
+
+  return (
+    <div className="flex justify-between underline">
+      <button onClick={props.onClickYesterday}>Previous Day</button>
+      {hasTomorrow ? (
+        <button onClick={props.onClickTomorrow}>Next Day</button>
+      ) : (
+        <div />
+      )}
+    </div>
   );
 }
 

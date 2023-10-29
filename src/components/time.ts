@@ -19,6 +19,11 @@ export function minus24Hours(seconds: number) {
   return toSeconds(roundHour(dayjs(ms).subtract(24, "hours")));
 }
 
+export function add24Hours(seconds: number) {
+  const ms = seconds * 1000;
+  return toSeconds(roundHour(dayjs(ms).add(24, "hours")));
+}
+
 function roundHour(dayjs: dayjs.Dayjs) {
   return dayjs.minute(0).second(0).millisecond(0);
 }

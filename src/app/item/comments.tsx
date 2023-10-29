@@ -102,7 +102,7 @@ function DiscussionHeader({
         )}
       </div>
       {story.text && <HTMLOutput className="text-xs pt-2" html={story.text} />}
-      <div className="border border-gray-300 p-2 rounded mt-2">
+      <div className="border border-gray-300 p-2 rounded mt-1">
         {filterOptions}
       </div>
     </div>

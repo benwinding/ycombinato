@@ -1,3 +1,4 @@
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 import { Header } from "@/components/Header";
 
@@ -7,6 +8,7 @@ export default function RootLayout(props: React.PropsWithChildren<{}>) {
       <body className="max-w-3xl w-full">
         <Header />
         <div style={{ background: "#f6f6ef" }}>{props.children}</div>
+        <Footer />
       </body>
     </html>
   );

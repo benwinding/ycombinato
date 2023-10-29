@@ -2,7 +2,7 @@ import { getFromNowStr } from "@/components/time";
 import Link from "next/link";
 import React from "react";
 
-function InternalLink(
+export function InternalLink(
   props: React.PropsWithChildren<{ href: string; className?: string }>
 ) {
   return (

@@ -224,25 +224,29 @@ function CommentHeader({
     { link: prevId, label: "prev" },
     { link: nextId, label: "next" },
   ].filter(({ link }) => link != null);
+  const internalLinkElements = internalLinks.map(({ link, label }, i) => (
+    <Fragment key={i}>
+      <a href={"#" + link}>{label}</a>
+      {i < internalLinks.length - 1 && <Bar />}
+    </Fragment>
+  ));
   return (
-    <div className="flex items-center gap-2 text-gray-500 text-xs py-1">
-      <LinkToAuthor className="flex-shrink-0" author={comment.author} />
-      <LinkToDiscussion
-        className="line-clamp-1"
-        discussionId={comment.id}
-        createdAt={comment.created_at}
-      />
-      <div className="flex-shrink-0">{expanderThread}</div>
-      <div className="flex-grow"></div>
-      <div className="flex justify-end flex-wrap gap-0">
-        {internalLinks.map(({ link, label }, i) => (
-          <Fragment key={i}>
-            <a href={"#" + link}>{label}</a>
-            {i < internalLinks.length - 1 && <Bar />}
-          </Fragment>
-        ))}
+    <div className="text-gray-500 text-xs">
+      <div className="flex items-center gap-2 py-1">
+        <LinkToAuthor className="flex-shrink-0" author={comment.author} />
+        <LinkToDiscussion
+          className="line-clamp-1"
+          discussionId={comment.id}
+          createdAt={comment.created_at}
+        />
+        <div className="flex-shrink-0">{expanderThread}</div>
+        <div className="flex-grow"></div>
+        <div className="hidden xs:flex justify-end flex-wrap gap-0">
+          {internalLinkElements}
+        </div>
+        <div className="flex-shrink-0 pr-2">{expanderText}</div>
       </div>
-      <div className="flex-shrink-0 pr-2">{expanderText}</div>
+      <div className="flex xs:hidden gap-0">{internalLinkElements}</div>
     </div>
   );
 }

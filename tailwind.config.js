@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       screens: {
         tiny: "240px",
+        xs: "350px",
       },
       fontSize: {
         xxs: "0.625rem", // 10px

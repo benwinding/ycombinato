@@ -23,7 +23,7 @@ export function useHnQueryUrlParams(): HnQueryUrlParams {
 
   const defaults: HnQueryUrlParams = {
     page: 1,
-    perPage: 30,
+    perPage: 50,
     createdBeforeI: getNow(),
     createdAfterI: getNowMinus(24, "hours"),
   };

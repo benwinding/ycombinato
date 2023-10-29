@@ -171,7 +171,7 @@ function CommentCardContent(props: {
   } = props;
   const shouldCollapseText = isThreadCollapsed || isTextCollapsed;
   return (
-    <ul className="list-decimal bg-black bg-opacity-5 rounded pl-1 sm:pl-2">
+    <ul className="list-decimal bg-black bg-opacity-3 rounded pl-1 sm:pl-2">
       <div id={id + ""}>
         {header}
         {!shouldCollapseText && (

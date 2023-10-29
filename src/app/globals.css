@@ -11,6 +11,10 @@ code {
   -webkit-tap-highlight-color: rgba(235, 0, 0, 0.04);
 }
 
+.bg-opacity-3 {
+  background-color: rgb(0 0 0 / 0.03);
+}
+
 .comment-text {
   overflow-wrap: break-word;
   padding-bottom: 0.2rem;

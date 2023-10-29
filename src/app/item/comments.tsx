@@ -237,10 +237,8 @@ function CommentHeader({
       <div className="flex justify-end flex-wrap gap-0">
         {internalLinks.map(({ link, label }, i) => (
           <Fragment key={i}>
-            <a href={"#" + link}>
-              {label}
-            </a>
-            {i < internalLinks.length - 1 && <Bar/>}
+            <a href={"#" + link}>{label}</a>
+            {i < internalLinks.length - 1 && <Bar />}
           </Fragment>
         ))}
       </div>

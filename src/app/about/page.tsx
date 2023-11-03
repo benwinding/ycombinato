@@ -76,8 +76,31 @@ export default function Page() {
             {"Here's the source code"} <GithubIcon width={20} />
           </ExternalLink>
         </p>
+        <FAQHeading>Tech Stack?</FAQHeading>
+        <TechList
+          defs={{
+            NextJS: "JS Framework",
+            "React Query": "Data querying library",
+            "Tailwind.css": "CSS Library",
+            "Day.js": "Time manipulation, formatting etc...",
+            "Github Pages": "Static hosting",
+            "Hacker News Algolia Api": "All of the content...",
+          }}
+        />
       </div>
     </div>
+  );
+}
+
+function TechList(props: { defs: { [key: string]: string } }) {
+  return (
+    <ul className="list-disc list-inside">
+      {Object.entries(props.defs).map(([key, value]) => (
+        <li key={key} className="pl-3">
+          <b>{key}</b>: <i>{value}</i>
+        </li>
+      ))}
+    </ul>
   );
 }
 

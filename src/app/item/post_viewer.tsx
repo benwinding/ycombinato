@@ -29,7 +29,7 @@ const PostViewer = () => {
   const postId = params.get("id");
   const query = useHnPost(postId + "");
 
-  const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 400);
+  const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 1000);
   const data = query.data;
   const idNextMap = new Map<number, number>();
   const idPrevMap = new Map<number, number>();

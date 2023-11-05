@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { getNow, getNowMinus } from "./time";
+import { Time } from "./time";
 
 export function usePageFromParams() {
   const params = useSearchParams();
@@ -10,8 +10,7 @@ export function usePageFromParams() {
 type HnQueryUrlParams = {
   page: number;
   perPage: number;
-  createdAfterI: number;
-  createdBeforeI: number;
+  date: string;
 };
 
 export function useHnQueryUrlParams(): HnQueryUrlParams {
@@ -24,22 +23,15 @@ export function useHnQueryUrlParams(): HnQueryUrlParams {
   const defaults: HnQueryUrlParams = {
     page: 1,
     perPage: 50,
-    createdBeforeI: getNow(),
-    createdAfterI: getNowMinus(24, "hours"),
+    date: Time.now().formatAsDateString(),
   };
   const page = Number(getParam("page") || defaults.page);
   const perPage = Number(getParam("perPage") || defaults.perPage);
-  const createdAfterI = Number(
-    getParam("createdAfterI") || defaults.createdAfterI
-  );
-  const createdBeforeI = Number(
-    getParam("createdBeforeI") || defaults.createdBeforeI
-  );
+  const date = getParam("date") || defaults.date;
   return {
     page,
     perPage,
-    createdAfterI,
-    createdBeforeI,
+    date,
   };
 }
 

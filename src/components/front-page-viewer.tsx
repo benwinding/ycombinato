@@ -13,14 +13,7 @@ import { LoadingScreen } from "./loading_screen";
 import { RadioButton } from "./RadioButton";
 import React, { useState } from "react";
 import { useSetUrlQueryParams } from "./usePageFromParams";
-import {
-  add24Hours,
-  dateToHnSeconds,
-  getNowMinus,
-  minus24Hours,
-  secondsToDateString,
-  todayDateString,
-} from "./time";
+import { Time } from "./time";
 
 export function FrontPageViewerWrapper(props: FrontPageQuery) {
   return (
@@ -47,19 +40,20 @@ function PageViewer(props: FrontPageQuery) {
   const isNotFrontPage = props.tag !== "front_page";
   const dateButtons = isNotFrontPage && (
     <DateButtons
-      createdBeforeI={props.createdBeforeI}
+      date={props.date}
       onClickYesterday={() => {
-        const newBefore = minus24Hours(props.createdBeforeI);
         patchQueryParams({
-          createdAfterI: minus24Hours(newBefore),
-          createdBeforeI: newBefore,
+          date: Time.fromDateString({ dateString: props.date })
+            .subtract1Day()
+            .formatAsDateString(),
           page: 1,
         });
       }}
       onClickTomorrow={() => {
         patchQueryParams({
-          createdAfterI: props.createdBeforeI,
-          createdBeforeI: add24Hours(props.createdBeforeI),
+          date: Time.fromDateString({ dateString: props.date })
+            .add1Day()
+            .formatAsDateString(),
           page: 1,
         });
       }}
@@ -87,11 +81,12 @@ function PageViewer(props: FrontPageQuery) {
               label="Date"
               option={
                 <DateSelect
-                  valueDateString={secondsToDateString(props.createdBeforeI)}
-                  onChange={(newTime) =>
+                  valueDateString={props.date}
+                  onChange={(newDate) =>
                     patchQueryParams({
-                      createdAfterI: minus24Hours(newTime),
-                      createdBeforeI: newTime,
+                      date: Time.fromDateObj({
+                        dateObj: newDate,
+                      }).formatAsDateString(),
                       page: 1,
                     })
                   }
@@ -131,14 +126,14 @@ function PerPageOptions(props: {
   );
 }
 
-const today = todayDateString();
+const today = Time.now().formatAsDateString();
 
 function DateSelect(props: {
   valueDateString: string;
-  onChange: (newTimeSeconds: number) => void;
+  onChange: (newDate: Date) => void;
 }) {
   const onInput = (date: string) => {
-    props.onChange(dateToHnSeconds(new Date(date)));
+    props.onChange(new Date(date));
   };
   return (
     <input
@@ -150,20 +145,23 @@ function DateSelect(props: {
 }
 
 function DateButtons(props: {
-  createdBeforeI: number;
+  date: string;
   onClickTomorrow: () => void;
   onClickYesterday: () => void;
 }) {
-  const hasTomorrow = React.useMemo(() => {
-    const dayBeforeToday = getNowMinus(1, "day");
-    const hasTomorrow = props.createdBeforeI < dayBeforeToday;
-    return hasTomorrow;
-  }, [props.createdBeforeI]);
+  const canClickTomorrow = React.useMemo(() => {
+    const startOfToday = Time.now().startOfDay().formatAsHnSeconds();
+    const endOfSelectedDay = Time.fromDateString({ dateString: props.date })
+      .endOfDay()
+      .formatAsHnSeconds();
+    const canClickTomorrow = endOfSelectedDay < startOfToday;
+    return canClickTomorrow;
+  }, [props.date]);
 
   return (
     <div className="flex justify-between underline">
       <button onClick={props.onClickYesterday}>Previous Day</button>
-      {hasTomorrow ? (
+      {canClickTomorrow ? (
         <button onClick={props.onClickTomorrow}>Next Day</button>
       ) : (
         <div />

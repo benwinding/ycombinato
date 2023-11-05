@@ -1,5 +1,5 @@
 "use client";
-import { getDateStr, getFromNowStr } from "@/components/time";
+import { Time } from "@/components/time";
 import gitLogString from "./git-log.txt";
 
 export function ChangelogTable() {
@@ -43,8 +43,12 @@ function LogRow(props: {
   message: string;
 }) {
   const githubUrl = `https://github.com/benwinding/ycombinato/commit/${props.commitHash}`;
-  const dateFromNow = `${getFromNowStr(props.dateIso)}`;
-  const dateString = `${getDateStr(props.dateIso)}`;
+  const dateFromNow = `${Time.fromIso({
+    dateIso: props.dateIso,
+  }).formatFromNow()}`;
+  const dateString = `${Time.fromIso({
+    dateIso: props.dateIso,
+  }).formatAsDateString()}`;
   return (
     <tr className="text-gray-400">
       <td className="border px-2">

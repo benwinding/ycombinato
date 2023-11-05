@@ -15,8 +15,7 @@ const Page = () => {
           tag="show_hn"
           page={params.page}
           pageSize={params.perPage}
-          createdAfterI={params.createdAfterI}
-          createdBeforeI={params.createdBeforeI}
+          date={params.date}
         />
       ) : null,
     [mounted, params]

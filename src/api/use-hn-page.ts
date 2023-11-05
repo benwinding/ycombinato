@@ -1,4 +1,5 @@
 "use client";
+import { Time } from "@/components/time";
 import { useQuery } from "react-query";
 
 type ApiFrontTag = "front_page";
@@ -13,8 +14,7 @@ export type FrontPageQuery =
     }
   | {
       tag: ApiOtherTags;
-      createdAfterI: number;
-      createdBeforeI: number;
+      date: string;
       pageSize: number;
       page: number;
     };
@@ -29,7 +29,7 @@ function getQueryKey(query: FrontPageQuery): string {
   if (query.tag === "front_page") {
     return `front_page_${query.pageSize}_${query.page}`;
   }
-  return `${query.tag}_${query.createdAfterI}_${query.createdBeforeI}_${query.pageSize}_${query.page}`;
+  return `${query.tag}_${query.date}_${query.pageSize}_${query.page}`;
 }
 
 export type StoryItem = {
@@ -65,8 +65,12 @@ function getQueryUrl(args: FrontPageQuery): string {
   if (args.tag !== "front_page") {
     b.setPath("search_by_date");
     b.addCreatedBeforeAfter({
-      before: args.createdBeforeI,
-      after: args.createdAfterI,
+      after: Time.fromDateString({ dateString: args.date })
+        .startOfDay()
+        .formatAsHnSeconds(),
+      before: Time.fromDateString({ dateString: args.date })
+        .endOfDay()
+        .formatAsHnSeconds(),
     });
   }
   return b.build();

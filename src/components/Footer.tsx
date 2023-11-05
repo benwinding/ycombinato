@@ -5,12 +5,13 @@ const links = [
   ["/ask", "ask"],
   ["/show", "show"],
   ["/about", "about"],
+  ["/about/changelog", "changelog"],
 ];
 
 export function Footer() {
   return (
     <div className="text-gray-600 flex flex-col items-center py-8">
-      <div className="flex justify-center pb-5">
+      <div className="flex flex-wrap justify-center pb-5">
         {links.map(([path, title], index) => (
           <span key={path}>
             {index !== 0 && <span className="px-3"> | </span>}

@@ -3,7 +3,7 @@ import React from "react";
 import { useSetUrlQueryParams } from "./usePageFromParams";
 
 export function FrontPageFooter(props: { pageCount: number }) {
-  const pages = new Array(props.pageCount).fill(0).map((_, i) => i + 1);
+  const pages = new Array(props.pageCount).fill(0).map((_, i) => `${i + 1}`);
   const { patchQueryParams } = useSetUrlQueryParams();
 
   return (

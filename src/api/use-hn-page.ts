@@ -9,14 +9,14 @@ type ApiOtherTags = "show_hn" | "ask_hn";
 export type FrontPageQuery =
   | {
       tag: ApiFrontTag;
-      pageSize: number;
-      page: number;
+      pageSize: string;
+      page: string;
     }
   | {
       tag: ApiOtherTags;
       date: string;
-      pageSize: number;
-      page: number;
+      pageSize: string;
+      page: string;
     };
 
 export function useHnPage(query: FrontPageQuery) {
@@ -61,7 +61,7 @@ function getQueryUrl(args: FrontPageQuery): string {
   const b = new QueryBuilder();
   b.addTag(args.tag);
   b.addPageSize(args.pageSize);
-  b.addPage(args.page - 1);
+  b.addPage(Number(args.page) - 1);
   if (args.tag !== "front_page") {
     b.setPath("search_by_date");
     b.addCreatedBeforeAfter({
@@ -101,7 +101,7 @@ class QueryBuilder {
     return this;
   }
 
-  addPageSize(pageSize: number) {
+  addPageSize(pageSize: string) {
     this.queryString += `hitsPerPage=${pageSize}&`;
     return this;
   }

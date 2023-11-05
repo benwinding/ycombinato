@@ -46,7 +46,7 @@ function PageViewer(props: FrontPageQuery) {
           date: Time.fromDateString({ dateString: props.date })
             .subtract1Day()
             .formatAsDateString(),
-          page: 1,
+          page: "1",
         });
       }}
       onClickTomorrow={() => {
@@ -54,7 +54,7 @@ function PageViewer(props: FrontPageQuery) {
           date: Time.fromDateString({ dateString: props.date })
             .add1Day()
             .formatAsDateString(),
-          page: 1,
+          page: "1",
         });
       }}
     />
@@ -87,7 +87,7 @@ function PageViewer(props: FrontPageQuery) {
                       date: Time.fromDateObj({
                         dateObj: newDate,
                       }).formatAsDateString(),
-                      page: 1,
+                      page: "1",
                     })
                   }
                 />
@@ -111,14 +111,14 @@ function OptionRow(props: { label: string; option: React.ReactNode }) {
 }
 
 function PerPageOptions(props: {
-  value: number;
-  onChange: (newPerPage: number) => void;
+  value: string;
+  onChange: (newPerPage: string) => void;
 }) {
   return (
     <select
       value={props.value}
       className="border border-gray-300 p-1"
-      onChange={(e) => props.onChange(parseInt(e.target.value))}
+      onChange={(e) => props.onChange(e.target.value)}
     >
       <option>50</option>
       <option>100</option>

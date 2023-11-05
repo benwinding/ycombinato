@@ -8,6 +8,7 @@ const links = [
   ["/", "front"],
   ["/ask", "ask"],
   ["/show", "show"],
+  ["/search", "search"],
 ];
 
 export function Header() {

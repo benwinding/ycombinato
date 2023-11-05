@@ -10,7 +10,7 @@ const Page = () => {
   const viewer = React.useMemo(
     () =>
       mounted ? (
-        <FrontPageViewerWrapper tag="front_page" page={page} pageSize={30} />
+        <FrontPageViewerWrapper tag="front_page" page={page} pageSize={"50"} />
       ) : null,
     [mounted, page]
   );

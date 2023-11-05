@@ -6,6 +6,10 @@ export function getFromNowStr(input: string): string {
   return dayjs(input).fromNow();
 }
 
+export function getDateStr(input: string): string {
+  return dayjs(input).format("YYYY-MM-DD");
+}
+
 export function getNow() {
   return toSeconds(roundHour(dayjs()));
 }

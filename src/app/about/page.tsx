@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import { ExternalLink } from "@/components/ExternalLink";
+import { InternalLink } from "@/components/InternalLink";
 
 const sourceLink = "https://github.com/benwinding/ycombinato";
 
@@ -76,6 +77,8 @@ export default function Page() {
             {"Here's the source code"} <GithubIcon width={20} />
           </ExternalLink>
         </p>
+        <FAQHeading>Changelog?</FAQHeading>
+        <InternalLink href="/about/changelog">here</InternalLink>
         <FAQHeading>Tech Stack?</FAQHeading>
         <TechList
           defs={{

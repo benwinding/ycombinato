@@ -7,4 +7,11 @@ module.exports = {
   experimental: {
     appDir: true,
   },
+  webpack(config, context) {
+    config.module.rules.push({
+      test: /\.txt$/,
+      use: "raw-loader",
+    });
+    return config;
+  },
 };

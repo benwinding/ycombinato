@@ -1,7 +1,7 @@
-import { InternalLink } from "./InternalLink";
+import { HighlightedLink } from "./HighlightedLink";
 
 const links = [
-  ["/front", "front"],
+  ["/", "front"],
   ["/ask", "ask"],
   ["/show", "show"],
   ["/about", "about"],
@@ -14,11 +14,11 @@ export function Footer() {
         {links.map(([path, title], index) => (
           <span key={path}>
             {index !== 0 && <span className="px-3"> | </span>}
-            <InternalLink href={path}>{title}</InternalLink>
+            <HighlightedLink href={path}>{title}</HighlightedLink>
           </span>
         ))}
       </div>
-      <InternalLink href="/">YCombinato</InternalLink>
+      <HighlightedLink href="/">YCombinato</HighlightedLink>
     </div>
   );
 }

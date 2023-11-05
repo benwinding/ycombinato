@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "yarn build-changelog && next dev",
     "build-changelog": "./src/app/about/changelog/build-changelog.sh",
     "build": "yarn build-changelog && next build",
-    "start": "next dev",
+    "start": "yarn dev",
     "test": "jest",
     "test:watch": "jest --watch",
     "pretty": "prettier --write .",

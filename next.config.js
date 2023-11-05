@@ -4,9 +4,6 @@ module.exports = {
   trailingSlash: false,
   distDir: "dist-export",
   output: "export",
-  experimental: {
-    appDir: true,
-  },
   webpack(config, context) {
     config.module.rules.push({
       test: /\.txt$/,

@@ -1,6 +1,6 @@
 "use client";
 import { Time } from "./time";
-import { useQueryParams } from "./useQueryParams";
+import { useQueryParams } from "@/hooks/useQueryParams";
 
 type HnQueryUrlParams = {
   page: string;

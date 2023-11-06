@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { QueryClientProvider } from "react-query";
 import { sortChildren } from "./sorter";
-import { useDebounce } from "./useDebounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useDataFiltered } from "./useDataFiltered";
 import { CommentResults } from "./comments";
 import { XCircleIcon } from "@heroicons/react/24/solid";

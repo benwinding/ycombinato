@@ -1,6 +1,6 @@
 "use client";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
-import { useIsMounted } from "@/components/useIsMounted";
+import { useIsMounted } from "@/hooks/useIsMounted";
 import { usePageFromParams } from "@/components/usePageFromParams";
 import React from "react";
 

@@ -2,7 +2,7 @@
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import { UserViewerWrapper } from "./user_viewer";
-import { useIsMounted } from "@/components/useIsMounted";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 const Page = () => {
   const mounted = useIsMounted();

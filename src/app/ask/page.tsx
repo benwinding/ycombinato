@@ -2,7 +2,7 @@
 import React from "react";
 import { FrontPageViewerWrapper } from "@/components/front-page-viewer";
 import { useHnQueryUrlParams } from "@/components/usePageFromParams";
-import { useIsMounted } from "@/components/useIsMounted";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 const Page = () => {
   const mounted = useIsMounted();

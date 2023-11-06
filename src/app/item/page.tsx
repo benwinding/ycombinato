@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { PostViewerWrapper } from "./post_viewer";
-import { useIsMounted } from "@/components/useIsMounted";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 const Page = () => {
   const mounted = useIsMounted();

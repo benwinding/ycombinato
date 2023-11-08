@@ -2,24 +2,41 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
-export function useQueryParams<T extends Record<string, string>>(props: {
+type QueryObject = Record<string, string | number>;
+
+// Caches params state to avoid re-renders
+function useSearchParamsWrapper<T extends QueryObject>(defaultParams: T): T {
+  const params = useSearchParams();
+  const [paramsState, setParamsState] = React.useState<T>(defaultParams);
+
+  React.useEffect(() => {
+    const shouldUpdate = Array.from(params.entries()).some(
+      ([key, value]) => paramsState[key] !== value
+    );
+    if (shouldUpdate) {
+      const newState = Object.entries(defaultParams).reduce(
+        (prev, [key, defaultValue]) => {
+          (prev as any)[key] = params.get(key) || defaultValue;
+          return prev;
+        },
+        {} as T
+      );
+      setParamsState({ ...paramsState, ...newState });
+    }
+  }, [defaultParams, params, paramsState]);
+
+  return paramsState;
+}
+
+export function useQueryParams<T extends QueryObject>(props: {
   defaultParams: T;
 }): {
   currentParams: T;
   patchQueryParams: (query: Partial<T>) => void;
 } {
-  const params = useSearchParams();
+  const currentParams = useSearchParamsWrapper<T>(props.defaultParams);
   const router = useRouter();
   const pathname = usePathname();
-
-  const currentParams = React.useMemo(
-    () =>
-      Object.entries(props.defaultParams).reduce((prev, [key, value]) => {
-        (prev as any)[key] = params.get(key) || value;
-        return prev;
-      }, {} as T),
-    [params, props.defaultParams]
-  );
 
   const patchQueryParams = React.useCallback(
     (query: Partial<T>) => {

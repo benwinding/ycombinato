@@ -50,7 +50,7 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-3">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+      <div className="z-10 w-full max-w-5xl flex flex-col font-mono text-sm lg:flex">
         <div className="flex items-center gap-2">
           <FilterText
             onChange={onChangeText}
@@ -59,7 +59,7 @@ export default function Page() {
           />
           <SearchButton onClick={executeSearch} />
         </div>
-        <div className="pl-1 py-2 flex gap-3 items-center">
+        <div className="pl-1 py-2 flex gap-3 items-center flex-wrap">
           <DateSelect
             label="After >"
             valueDateString={Time.fromHn({

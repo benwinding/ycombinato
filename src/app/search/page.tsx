@@ -17,6 +17,7 @@ export default function Page() {
     defaultParams: {
       text: "",
       afterISeconds: 0,
+      minimumPoints: 0,
       beforeISeconds: Time.now().formatAsHnSeconds(),
       page: 1,
       pageSize: 30,
@@ -37,6 +38,11 @@ export default function Page() {
     setState((s) => ({
       ...s,
       afterISeconds: Time.fromDateObj({ dateObj: date }).formatAsHnSeconds(),
+    }));
+  const onChangeMinimumPoints = (points: number) =>
+    setState((s) => ({
+      ...s,
+      minimumPoints: points,
     }));
   const executeSearch = () => {
     patchQueryParams(state);
@@ -69,16 +75,16 @@ export default function Page() {
             }).formatAsDateString()}
             onChange={onChangeDateBefore}
           />
+          <RangeSelect
+            label="Minimum points"
+            value={state.minimumPoints}
+            max={1000}
+            onChange={onChangeMinimumPoints}
+          />
         </div>
       </div>
       <QueryClientProvider client={queryClient}>
-        <DataViewer
-          text={currentParams.text}
-          beforeISeconds={currentParams.beforeISeconds}
-          afterISeconds={currentParams.afterISeconds}
-          pageSize={currentParams.pageSize}
-          page={currentParams.page}
-        />
+        <DataViewer {...currentParams} />
       </QueryClientProvider>
     </main>
   );
@@ -125,6 +131,30 @@ function DateSelect(props: {
         type="date"
         value={props.valueDateString}
         onChange={(e) => onInput(e.target.value)}
+      />
+    </label>
+  );
+}
+
+function RangeSelect(props: {
+  label: string;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const val = props.value > 0 ? props.value : "disabled";
+  return (
+    <label className="flex flex-col">
+      <span className="text-xs">
+        {props.label} ({val})
+      </span>
+      <input
+        type="range"
+        max={props.max}
+        step={1}
+        min={0}
+        value={props.value}
+        onChange={(e) => props.onChange(Number(e.target.value))}
       />
     </label>
   );

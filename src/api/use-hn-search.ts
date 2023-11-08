@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 
 export type SearchPageQuery = {
   text: string;
+  minimumPoints: number;
   beforeISeconds: number;
   afterISeconds: number;
   pageSize: number;
@@ -20,7 +21,7 @@ function useHnQuery(url: string, queryKey: string) {
 }
 
 function getQueryKey(query: SearchPageQuery): string {
-  return `${query.text}_${query.afterISeconds}_${query.beforeISeconds}_${query.pageSize}_${query.page}`;
+  return `${query.text}_${query.minimumPoints}_${query.afterISeconds}_${query.beforeISeconds}_${query.pageSize}_${query.page}`;
 }
 
 export type StoryItem = {
@@ -53,6 +54,9 @@ function getQueryUrl(args: SearchPageQuery): string {
   b.addPageSize(args.pageSize);
   b.addPage(Number(args.page) - 1);
   b.addText(args.text);
+  if (args.minimumPoints > 0) {
+    b.addPoints(args.minimumPoints);
+  }
   b.addCreatedBeforeAfter({
     after: args.afterISeconds,
     before: args.beforeISeconds,
@@ -62,11 +66,12 @@ function getQueryUrl(args: SearchPageQuery): string {
 
 class HnQueryBuilder {
   private queryString: string = "";
+  private numericFiltersString: string = "";
   private baseUrl = "https://hn.algolia.com/api/v1/";
   private path = "search_by_date";
 
   addCreatedBeforeAfter(args: { after: number; before: number }) {
-    this.queryString += `numericFilters=created_at_i>${args.after},created_at_i<${args.before}&`;
+    this.numericFiltersString += `created_at_i>${args.after},created_at_i<${args.before}&`;
     return this;
   }
 
@@ -85,13 +90,18 @@ class HnQueryBuilder {
     return this;
   }
 
+  addPoints(points: number) {
+    this.numericFiltersString += `points>${points}&`;
+    return this;
+  }
+
   addPageSize(pageSize: number) {
     this.queryString += `hitsPerPage=${pageSize}&`;
     return this;
   }
 
   build() {
-    const url = `${this.baseUrl}${this.path}?${this.queryString}`;
+    const url = `${this.baseUrl}${this.path}?${this.queryString}numericFilters=${this.numericFiltersString}`;
     return url;
   }
 }

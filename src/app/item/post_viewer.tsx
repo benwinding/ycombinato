@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { QueryClientProvider } from "react-query";
 import { sortChildren } from "./sorter";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -181,23 +181,34 @@ const useResults = (
   return results;
 };
 
+function useDataCached<T>(data: T | undefined): T | undefined {
+  const [cachedData, setCachedData] = React.useState<T | undefined>(data);
+  const hasChanged = JSON.stringify(data) !== JSON.stringify(cachedData);
+  React.useEffect(() => {
+    hasChanged && setCachedData(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasChanged]);
+  return cachedData;
+}
+
 const useDataSort = (
   data: Story | undefined,
   sortOption: Option,
   idNextMap: Map<number, number>,
   idPrevMap: Map<number, number>
 ) => {
+  const dataCached = useDataCached(data);
   const dataSorted = useMemo(() => {
-    if (!data) {
+    if (!dataCached) {
       return undefined;
     }
-    return sortChildren(data, {
+    return sortChildren(dataCached, {
       byResponseCount: sortOption === Option.byResponseCount,
       byThreadDepth: sortOption === Option.byThreadDepth,
       onNextFound: (child, next) => idNextMap.set(child.id, next.id),
       onPrevFound: (child, prev) => idPrevMap.set(child.id, prev.id),
     });
-  }, [data, idNextMap, idPrevMap, sortOption]);
+  }, [dataCached, idNextMap, idPrevMap, sortOption]);
   return dataSorted;
 };
 

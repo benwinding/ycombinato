@@ -66,10 +66,11 @@ function getQueryUrl(args: FrontPageQuery): string {
     b.setPath("search_by_date");
     b.addCreatedBeforeAfter({
       after: Time.fromDateString({ dateString: args.date })
-        .startOfDay()
+        .setClockNow()
+        .subtract1Day()
         .formatAsHnSeconds(),
       before: Time.fromDateString({ dateString: args.date })
-        .endOfDay()
+        .setClockNow()
         .formatAsHnSeconds(),
     });
   }

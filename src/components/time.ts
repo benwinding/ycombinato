@@ -63,6 +63,17 @@ export class Time {
     return this;
   }
 
+  setClockNow() {
+    const now = dayjs(new Date());
+    this.ms = Number(
+      dayjs(this.ms)
+        .set("hours", now.hour())
+        .set("minute", now.minute())
+        .toDate()
+    );
+    return this;
+  }
+
   subtract1Day(): Time {
     this.ms = Number(dayjs(this.ms).subtract(24, "hours").toDate());
     return this;

@@ -33,8 +33,14 @@ const PostViewer = () => {
   const data = query.data;
   const idNextMap = new Map<number, number>();
   const idPrevMap = new Map<number, number>();
-  const dataSorted = useDataSort(data, sortOption, idNextMap, idPrevMap);
   const commentCountResult = React.useMemo(() => getCommentCount(data), [data]);
+  const dataSorted = useDataSort(
+    data,
+    sortOption,
+    idNextMap,
+    idPrevMap,
+    commentCountResult.idTotalMap
+  );
   const dataFiltered = useDataFiltered(dataSorted, textFilterDebounced);
   const markCount = dataFiltered?.markCount;
   const filterOptions = (
@@ -195,7 +201,8 @@ const useDataSort = (
   data: Story | undefined,
   sortOption: Option,
   idNextMap: Map<number, number>,
-  idPrevMap: Map<number, number>
+  idPrevMap: Map<number, number>,
+  idTotalMap: Map<number, number>
 ) => {
   const dataCached = useDataCached(data);
   const dataSorted = useMemo(() => {
@@ -203,12 +210,14 @@ const useDataSort = (
       return undefined;
     }
     return sortChildren(dataCached, {
+      idTotalMap,
       byResponseCount: sortOption === Option.byResponseCount,
       byThreadDepth: sortOption === Option.byThreadDepth,
       onNextFound: (child, next) => idNextMap.set(child.id, next.id),
       onPrevFound: (child, prev) => idPrevMap.set(child.id, prev.id),
     });
-  }, [dataCached, idNextMap, idPrevMap, sortOption]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataCached, sortOption]);
   return dataSorted;
 };
 

@@ -1,13 +1,15 @@
 import { sortChildren } from "./sorter";
 
 type SimpleTreeRoot = SimpleTreeNode[];
-type SimpleTreeNode = [string, SimpleTreeNode[]] | [string];
+type SimpleTreeNode = [number, SimpleTreeNode[]] | [number];
 
 type ChildrenObjRoot = {
+  id: number;
   children: ChildrenObjNode[];
 };
 type ChildrenObjNode = {
-  value: string;
+  id: number;
+  value: number;
   children: ChildrenObjNode[];
 };
 
@@ -15,40 +17,50 @@ describe("sortStory", () => {
   it("sorts stories byResponseCount", () => {
     const res = sortChildren(
       convertSimpleTree([
-        ["a2"], //
-        ["a1", [["a11"], ["a12"]]], //
-        ["a3"], //
+        [2], //
+        [10, [[11], [12]]], //
+        [3], //
       ]),
       {
         byResponseCount: true,
         byThreadDepth: false,
+        idTotalMap: new Map<number, number>([
+          [2, 1],
+          [10, 2],
+          [3, 1],
+        ]),
       }
     );
     expect<ChildrenObjRoot>(res).toMatchObject(
       convertSimpleTree([
-        ["a1", [["a11"], ["a12"]]], //
-        ["a2"], //
-        ["a3"], //
+        [10, [[11], [12]]], //
+        [2], //
+        [3], //
       ])
     );
   });
   it("sorts stories byThreadDepth", () => {
     const res = sortChildren(
       convertSimpleTree([
-        ["a1", [["a11"]]], //
-        ["a2", [["a11", [["a111"]]]]], //
-        ["a3"], //
+        [1, [[11]]], //
+        [2, [[11, [[111]]]]], //
+        [3], //
       ]),
       {
         byResponseCount: false,
         byThreadDepth: true,
+        idTotalMap: new Map<number, number>([
+          [2, 1],
+          [10, 2],
+          [3, 1],
+        ]),
       }
     );
     expect<ChildrenObjRoot>(res).toMatchObject(
       convertSimpleTree([
-        ["a2", [["a11", [["a111"]]]]], //
-        ["a1", [["a11"]]], //
-        ["a3"], //
+        [2, [[11, [[111]]]]], //
+        [1, [[11]]], //
+        [3], //
       ])
     );
   });
@@ -56,36 +68,41 @@ describe("sortStory", () => {
     const res = sortChildren(
       convertSimpleTree([
         [
-          "a2",
+          2,
           [
-            ["a11"], //
-            ["a11", [["a111"]]], //
+            [11], //
+            [11, [[111]]], //
           ],
         ],
-        ["a2"],
+        [2],
       ]),
       {
         byResponseCount: false,
         byThreadDepth: true,
+        idTotalMap: new Map<number, number>([
+          [2, 1],
+          [10, 2],
+          [3, 1],
+        ]),
       }
     );
     expect<ChildrenObjRoot>(res).toMatchObject(
       convertSimpleTree([
         [
-          "a2",
+          2,
           [
-            ["a11", [["a111"]]], //
-            ["a11"], //
+            [11, [[111]]], //
+            [11], //
           ],
         ],
-        ["a2"],
+        [2],
       ])
     );
   });
 });
 
 function convertSimpleTree(simpleRoot: SimpleTreeRoot): ChildrenObjRoot {
-  const root: ChildrenObjRoot = { children: [] };
+  const root: ChildrenObjRoot = { id: 999999, children: [] };
 
   function buildTree(
     node: ChildrenObjRoot,
@@ -93,7 +110,7 @@ function convertSimpleTree(simpleRoot: SimpleTreeRoot): ChildrenObjRoot {
   ): ChildrenObjNode[] {
     for (let i = 0; i < data.length; i++) {
       const [value, children] = data[i];
-      const newNode: ChildrenObjNode = { value, children: [] };
+      const newNode: ChildrenObjNode = { value, id: value, children: [] };
       newNode.children = buildTree(newNode, children || []);
       node.children.push(newNode);
     }

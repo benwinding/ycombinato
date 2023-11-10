@@ -1,4 +1,5 @@
 type HasChildren = {
+  id: number;
   children: HasChildren[];
 };
 
@@ -7,6 +8,7 @@ function superNaiveDeepClone<T>(obj: T): T {
 }
 
 type SortChildrenOpts<T> = {
+  idTotalMap: Map<number, number>;
   byThreadDepth: boolean;
   byResponseCount: boolean;
   onNextFound?: (child: T, next: T) => void;
@@ -53,9 +55,9 @@ function getSortFunction<T>(opts: SortChildrenOpts<T>): CommentSortFunction {
     return sortbyThreadDepthFn;
   }
   if (opts.byResponseCount) {
-    return sortByResponseCount;
+    return createSortByResponseCount(opts);
   }
-  return sortByResponseCount;
+  return createSortByResponseCount(opts);
 }
 
 type CommentSortFunction = (
@@ -83,9 +85,15 @@ const sortbyThreadDepthFn: CommentSortFunction = (
 ): number => {
   return getDeepestChildLevel(0, comment2) - getDeepestChildLevel(0, comment1);
 };
-const sortByResponseCount: CommentSortFunction = (
-  comment1: HasChildren,
-  comment2: HasChildren
-): number => {
-  return comment2.children.length - comment1.children.length;
+const createSortByResponseCount = <T>(opts: SortChildrenOpts<T>) => {
+  const sortByResponseCount: CommentSortFunction = (
+    comment1: HasChildren,
+    comment2: HasChildren
+  ): number => {
+    return (
+      (opts.idTotalMap.get(comment2.id) || 0) -
+      (opts.idTotalMap.get(comment1.id) || 0)
+    );
+  };
+  return sortByResponseCount;
 };

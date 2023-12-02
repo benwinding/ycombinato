@@ -31,8 +31,8 @@ const PostViewer = () => {
 
   const [textFilterDebounced, debounceLoading] = useDebounce(textFilter, 1000);
   const data = query.data;
-  const idNextMap = new Map<number, number>();
-  const idPrevMap = new Map<number, number>();
+  const idNextMap = React.useMemo(() => new Map<number, number>(), []);
+  const idPrevMap = React.useMemo(() => new Map<number, number>(), []);
   const commentCountResult = React.useMemo(() => getCommentCount(data), [data]);
   const dataSorted = useDataSort(
     data,

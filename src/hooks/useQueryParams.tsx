@@ -11,7 +11,7 @@ function useSearchParamsWrapper<T extends QueryObject>(defaultParams: T): T {
 
   React.useEffect(() => {
     const shouldUpdate = Array.from(params.entries()).some(
-      ([key, value]) => paramsState[key] !== value
+      ([key, value]) => defaultParams[key] != null && paramsState[key] !== value
     );
     if (shouldUpdate) {
       const newState = Object.entries(defaultParams).reduce(

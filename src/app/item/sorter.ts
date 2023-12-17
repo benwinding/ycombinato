@@ -57,7 +57,7 @@ function getSortFunction<T>(opts: SortChildrenOpts<T>): CommentSortFunction {
   if (opts.byResponseCount) {
     return createSortByResponseCount(opts);
   }
-  return createSortByResponseCount(opts);
+  return createNoOp(opts);
 }
 
 type CommentSortFunction = (
@@ -96,4 +96,8 @@ const createSortByResponseCount = <T>(opts: SortChildrenOpts<T>) => {
     );
   };
   return sortByResponseCount;
+};
+
+const createNoOp = <T>(opts: SortChildrenOpts<T>): CommentSortFunction => {
+  return (a, b) => 0;
 };

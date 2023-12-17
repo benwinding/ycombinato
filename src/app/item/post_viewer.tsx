@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { QueryClientProvider } from "react-query";
 import { sortChildren } from "./sorter";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -222,6 +222,7 @@ const useDataSort = (
 };
 
 const enum Option {
+  unsorted = "Unsorted",
   byResponseCount = "Sort by response count",
   byThreadDepth = "Sort by thread length",
 }
@@ -252,7 +253,11 @@ function SortOptions(props: {
   value: Option | undefined;
   onChange: (value: Option) => void;
 }) {
-  const options: Option[] = [Option.byResponseCount, Option.byThreadDepth];
+  const options: Option[] = [
+    Option.byResponseCount,
+    Option.byThreadDepth,
+    Option.unsorted,
+  ];
 
   return (
     <div className="flex items-center gap-2">

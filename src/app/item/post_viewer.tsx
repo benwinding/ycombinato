@@ -260,7 +260,7 @@ function SortOptions(props: {
   ];
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {options.map((option) => (
         <RadioButton
           key={option}

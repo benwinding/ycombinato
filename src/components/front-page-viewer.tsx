@@ -195,6 +195,7 @@ function sortByComments(item1: StoryItem, item2: StoryItem): number {
 }
 
 const enum SortOption {
+  unsorted = "Unsorted",
   byPoints = "Sort by points",
   byComments = "Sort by comments",
 }
@@ -203,7 +204,11 @@ function SortOptions(props: {
   value: SortOption | undefined;
   onChange: (value: SortOption) => void;
 }) {
-  const options: SortOption[] = [SortOption.byPoints, SortOption.byComments];
+  const options: SortOption[] = [
+    SortOption.byPoints,
+    SortOption.byComments,
+    SortOption.unsorted,
+  ];
 
   return (
     <div className="flex items-center gap-2 border border-gray-300 p-2 rounded mb-2">
